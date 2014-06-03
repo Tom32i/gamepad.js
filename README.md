@@ -9,7 +9,7 @@ Simple HTML5 Gamepad API handler
 
 ## Usage:
 
-``javascript
+```javascript
 var listener = new GamepadListener();
 ```
 
