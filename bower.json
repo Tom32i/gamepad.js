@@ -1,0 +1,22 @@
+{
+  "name": "gamepad.js",
+  "version": "0.0.1",
+  "description": "Simple HTML5 Gamepad API handler",
+  "keywords": ["gamepad", "api", "html5"],
+  "homepage": "https://github.com/Tom32i/gamepad.js",
+  "license": "MIT",
+  "authors": [{
+    "name": "Thomas JARRAND",
+    "email": "thomas.jarrand@gmail.com",
+    "homepage": "http://thomas-jarrand.com"
+  }],
+  "main": "dist/gamepad.min.js",
+  "dependencies": {
+    "tom32i-event-emitter.js": "~0.0.1"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
+}
