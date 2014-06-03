@@ -1,24 +1,25 @@
-GamepadListener.prototype = Object.create(EventEmitter.prototype);
-GamepadListener.prototype.constructor = GamepadListener;
-
 /**
  * Gamepad Listener
  */
-function GamepadListener(element)
+function GamepadListener(options)
 {
     EventEmitter.call(this);
 
-    this.output   = element;
+    this.options  = typeof(options) === 'object' ? options : {};
     this.frame    = null;
     this.gamepads = [];
     this.update   = this.update.bind(this);
     this.onAxis   = this.onAxis.bind(this);
     this.onButton = this.onButton.bind(this);
+    this.stop     = this.stop.bind(this);
 
-    window.addEventListener('error', this.stop.bind(this));
+    window.addEventListener('error', this.stop);
 
     this.start();
 }
+
+GamepadListener.prototype = Object.create(EventEmitter.prototype);
+GamepadListener.prototype.constructor = GamepadListener;
 
 /**
  * Start
@@ -50,23 +51,9 @@ GamepadListener.prototype.update = function()
 
     this.checkForNewGamepad();
 
-    var gamepads = this.getGamepads();
-
     for (var i = this.gamepads.length - 1; i >= 0; i--) {
         this.gamepads[i].handler.update();
     }
-
-    this.output.className = 'gamepad-output ' + (this.gamepads.length ? 'ok' : 'not-found');
-};
-
-/**
- * Get gampads
- *
- * @return {GamepadList}
- */
-GamepadListener.prototype.getGamepads = function()
-{
-    return typeof(navigator.getGamepads) != 'undefined' ? navigator.getGamepads() : typeof(navigator.webkitGetGamepads) != 'undefined' ? navigator.webkitGetGamepads() : null;
 };
 
 /**
@@ -92,12 +79,12 @@ GamepadListener.prototype.checkForNewGamepad = function()
  */
 GamepadListener.prototype.addGamepad = function(gamepad)
 {
-    var handler = new GamepadHandler(gamepad);
+    var handler = new GamepadHandler(gamepad, this.options);
 
     this.gamepads.push(gamepad);
 
-    handler.addListener('axis', this.onAxis);
-    handler.addListener('button', this.onButton);
+    handler.on('axis', this.onAxis);
+    handler.on('button', this.onButton);
 };
 
 /**
@@ -108,7 +95,6 @@ GamepadListener.prototype.addGamepad = function(gamepad)
 GamepadListener.prototype.onAxis = function(event)
 {
     this.emit('axis', event.detail);
-    console.log(this.getGamepads());
 };
 
 /**
@@ -119,4 +105,14 @@ GamepadListener.prototype.onAxis = function(event)
 GamepadListener.prototype.onButton = function(event)
 {
     this.emit('button', event.detail);
+};
+
+/**
+ * Get gampads
+ *
+ * @return {GamepadList}
+ */
+GamepadListener.prototype.getGamepads = function()
+{
+    return typeof(navigator.getGamepads) !== 'undefined' ? navigator.getGamepads() : (typeof(navigator.webkitGetGamepads) !== 'undefined' ? navigator.webkitGetGamepads() : null);
 };

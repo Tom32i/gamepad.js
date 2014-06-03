@@ -1,12 +1,16 @@
-var gulp = require('gulp'),
-  concat = require('gulp-concat'),
-  uglify = require('gulp-uglify'),
-  header = require('gulp-header'),
-  jshint = require('gulp-jshint'),
-  meta = require('./package.json');
+var gulp   = require('gulp'),
+    concat = require('gulp-concat'),
+    uglify = require('gulp-uglify'),
+    header = require('gulp-header'),
+    jshint = require('gulp-jshint'),
+    meta   = require('./package.json');
 
 var srcDir = './src/',
     distDir = './dist/',
+    vendors = [
+        './bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js',
+        './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js'
+    ]
     banner = [
       '/*!',
       ' * <%= name %> <%= version %>',
@@ -22,18 +26,22 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('full', function() {
-    gulp.src(srcDir + '**/*.js')
+    gulp.src(vendors.concat([srcDir + '**/*.js']))
         .pipe(concat(meta.name))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(distDir));
 });
 
 gulp.task('min', function(){
-    gulp.src(srcDir + '**/*.js')
+    gulp.src(vendors.concat([srcDir + '**/*.js']))
         .pipe(concat(meta.name.replace('.js', '.min.js')))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(distDir));
+});
+
+gulp.task('watch', function () {
+    gulp.watch(srcDir + '**/*.js', ['default']);
 });
 
 gulp.task('default', ['jshint', 'full', 'min']);

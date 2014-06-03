@@ -2,7 +2,11 @@
   "name": "gamepad.js",
   "version": "0.0.1",
   "description": "Simple HTML5 Gamepad API handler",
-  "keywords": ["gamepad", "api", "html5"],
+  "keywords": [
+    "gamepad",
+    "api",
+    "html5"
+  ],
   "homepage": "https://github.com/Tom32i/gamepad.js",
   "license": "MIT",
   "author": {

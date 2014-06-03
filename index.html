@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <div id="output"></div>
+        <script src="dist/gamepad.js"></script>
+        <script>
+            function init() {
+                var listener = new GamepadListener({
+                    button: {
+                        analog: false
+                    },
+                    stick: {
+                        precision: 2
+                    }
+                });
+
+                console.log(listener);
+
+                listener.on('axis', function (e) { console.log("Axis", e); });
+                listener.on('button', function (e) { console.log("Button", e); });
+            }
+
+            window.addEventListener('load', init);
+            console.log("lol");
+        </script>
+    </body>
+</html>

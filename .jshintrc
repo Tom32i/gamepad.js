@@ -24,6 +24,7 @@
         "confirm",
         "CustomEvent",
         "Event",
-        "console"
+        "console",
+        "navigator"
     ]
 }
