@@ -53,7 +53,7 @@ var listener = new GamepadListener({
 
 Listen for value change on gampads:
 
-``javascript
+```javascript
 listener.on('axis', function (event) {
     /**
      * event:
