@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <style type="text/css">
+            .output {
+                width: 25%;
+                float: left;
+                position: relative;
+                display: block;
+                min-height: 28px;
+                padding-top: 28px;
+                overflow: auto;
+            }
+            .output h2 {
+                position: fixed;
+                top: 0;
+                background: white;
+                width: 25%;
+                text-align: center;
+            }
+            .output * {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="output">
+            <div id="output-0" class="output">
+                <h2>Slot 0</h2>
+            </div>
+            <div id="output-1" class="output">
+                <h2>Slot 1</h2>
+            </div>
+            <div id="output-2" class="output">
+                <h2>Slot 2</h2>
+            </div>
+            <div id="output-3" class="output">
+                <h2>Slot 3</h2>
+            </div>
+        </div>
+        <script src="dist/gamepad.js"></script>
+        <script>
+            var outputs = document.getElementsByClassName('output');
+
+            function init() {
+                var listener = new GamepadListener();
+
+                console.log(listener);
+
+                listener.on('gamepad:connected', function (e) {
+                    var index = e.detail.gamepad.index,
+                        id = e.detail.gamepad.id;
+
+                    outputLog(index, "Connected: " + id, e.detail);
+                });
+
+                listener.on('gamepad:axis', function (e) {
+                    var index = e.detail.gamepad.index,
+                        axis = e.detail.axis,
+                        value = e.detail.value;
+
+                    outputLog(index, "Axis [" + axis + "]: " + value, e.detail);
+                });
+
+                listener.on('gamepad:button', function (e) {
+                    var index = e.detail.gamepad.index,
+                        button = e.detail.index,
+                        pressed = e.detail.pressed ? 'pressed' : 'released',
+                        value = e.detail.value;
+
+                    outputLog(index, "Button [" + button + "] " + pressed + ": " + value, e.detail);
+                });
+            }
+
+            function outputLog (index, message, detail)
+            {
+                outputs[index].innerHTML += "<p>" + message.toString() + "</p>";
+                console.log(detail);
+            }
+
+            window.addEventListener('load', init);
+        </script>
+    </body>
+</html>
