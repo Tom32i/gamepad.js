@@ -54,30 +54,37 @@ var listener = new GamepadListener({
 Listen for value change on gampads:
 
 ```javascript
-listener.on('axis', function (event) {
+
+listener.on('gamepad:connected',  function (event) {
     /**
-     * event:
-     *   CustomEvent {
-     *       detail: {
-     *           axis: 1,
-     *           gamepad: Gamepad,
-     *           value: -0.34
-     *       }
+     * event: CustomEvent
+     *   detail: {
+     *       gamepad: Gamepad,
+     *       index: 0
      *   }
      */
 });
 
-listener.on('button',  function (event) {
+listener.on('gamepad:axis', function (event) {
     /**
-     * event:
-     *   CustomEvent {
-     *       detail: {
-     *           gamepad: Gamepad,
-     *           button: GamepadButton,
-     *           pressed: true,
-     *           index: 7,
-     *           value: 0.56
-     *       }
+     * event: CustomEvent
+     *   detail: {
+     *       axis: 1,
+     *       gamepad: Gamepad,
+     *       value: -0.34
+     *   }
+     */
+});
+
+listener.on('gamepad:button',  function (event) {
+    /**
+     * event: CustomEvent
+     *   detail: {
+     *       gamepad: Gamepad,
+     *       button: GamepadButton,
+     *       pressed: true,
+     *       index: 7,
+     *       value: 0.56
      *   }
      */
 });

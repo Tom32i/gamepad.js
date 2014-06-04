@@ -5,24 +5,45 @@
         <div id="output"></div>
         <script src="dist/gamepad.js"></script>
         <script>
+            var output = document.getElementById('output');
+
             function init() {
-                var listener = new GamepadListener({
-                    button: {
-                        analog: false
-                    },
-                    stick: {
-                        precision: 2
-                    }
-                });
+                var listener = new GamepadListener();
 
                 console.log(listener);
 
-                listener.on('axis', function (e) { console.log("Axis", e); });
-                listener.on('button', function (e) { console.log("Button", e); });
+                listener.on('gamepad:connected', function (e) {
+                    var index = e.detail.gamepad.index,
+                        id = e.detail.gamepad.id;
+
+                    outputLog("Gamepad [" + index + "] connected: " + id, e.detail);
+                });
+
+                listener.on('gamepad:axis', function (e) {
+                    var index = e.detail.gamepad.index,
+                        axis = e.detail.axis,
+                        value = e.detail.value;
+
+                    outputLog("Gamepad [" + index + "] axis [" + axis + "]: " + value, e.detail);
+                });
+
+                listener.on('gamepad:button', function (e) {
+                    var index = e.detail.gamepad.index,
+                        button = e.detail.index,
+                        pressed = e.detail.pressed ? 'pressed' : 'released',
+                        value = e.detail.value;
+
+                    outputLog("Gamepad [" + index + "] button [" + button + "] " + pressed + ": " + value, e.detail);
+                });
+            }
+
+            function outputLog (message, detail)
+            {
+                output.innerHTML += message.toString() + "<br/>";
+                console.log(detail);
             }
 
             window.addEventListener('load', init);
-            console.log("lol");
         </script>
     </body>
 </html>

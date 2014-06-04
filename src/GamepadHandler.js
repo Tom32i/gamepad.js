@@ -17,7 +17,7 @@ function GamepadHandler(gamepad, options)
     }
 
     for (var b = this.buttons.length - 1; b >= 0; b--) {
-        this.buttons[b] = false;
+        this.buttons[b] = 0;
     }
 
     this.gamepad.handler = this;
@@ -111,7 +111,11 @@ GamepadHandler.prototype.setStick = function(stick, axis, value, options)
 
     if (this.sticks[stick][axis] !== value) {
         this.sticks[stick][axis] = value;
-        this.emit('axis', {gamepad: this.gamepad, axis: axis, value: this.sticks[stick][axis]});
+        this.emit('gamepad:axis', {
+            gamepad: this.gamepad,
+            axis: axis,
+            value: this.sticks[stick][axis]
+        });
     }
 };
 
@@ -137,7 +141,7 @@ GamepadHandler.prototype.setButton = function(index, button, options)
 
     if (this.buttons[index] !== value) {
         this.buttons[index] = value;
-        this.emit('button', {
+        this.emit('gamepad:button', {
             gamepad: this.gamepad,
             button: button,
             index: index,

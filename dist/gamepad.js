@@ -31,7 +31,7 @@ function GamepadHandler(gamepad, options)
     }
 
     for (var b = this.buttons.length - 1; b >= 0; b--) {
-        this.buttons[b] = false;
+        this.buttons[b] = 0;
     }
 
     this.gamepad.handler = this;
@@ -125,7 +125,11 @@ GamepadHandler.prototype.setStick = function(stick, axis, value, options)
 
     if (this.sticks[stick][axis] !== value) {
         this.sticks[stick][axis] = value;
-        this.emit('axis', {gamepad: this.gamepad, axis: axis, value: this.sticks[stick][axis]});
+        this.emit('gamepad:axis', {
+            gamepad: this.gamepad,
+            axis: axis,
+            value: this.sticks[stick][axis]
+        });
     }
 };
 
@@ -151,7 +155,7 @@ GamepadHandler.prototype.setButton = function(index, button, options)
 
     if (this.buttons[index] !== value) {
         this.buttons[index] = value;
-        this.emit('button', {
+        this.emit('gamepad:button', {
             gamepad: this.gamepad,
             button: button,
             index: index,
@@ -169,7 +173,6 @@ function GamepadListener(options)
 
     this.options  = typeof(options) === 'object' ? options : {};
     this.frame    = null;
-    this.gamepads = [];
     this.update   = this.update.bind(this);
     this.onAxis   = this.onAxis.bind(this);
     this.onButton = this.onButton.bind(this);
@@ -211,25 +214,15 @@ GamepadListener.prototype.update = function()
 {
     this.frame = window.requestAnimationFrame(this.update);
 
-    this.checkForNewGamepad();
-
-    for (var i = this.gamepads.length - 1; i >= 0; i--) {
-        this.gamepads[i].handler.update();
-    }
-};
-
-/**
- * Check for new gampads
- */
-GamepadListener.prototype.checkForNewGamepad = function()
-{
     var gamepads = this.getGamepads();
 
-    if (gamepads.length !== this.gamepads.length) {
-        for (var i = gamepads.length - 1; i >= 0; i--) {
-            if (gamepads[i] && this.gamepads.indexOf(gamepads[i]) < 0) {
+    for (var i = gamepads.length - 1; i >= 0; i--) {
+        if (gamepads[i]) {
+            if (typeof(gamepads[i].handler) === 'undefined') {
                 this.addGamepad(gamepads[i]);
             }
+
+            gamepads[i].handler.update();
         }
     }
 };
@@ -237,16 +230,16 @@ GamepadListener.prototype.checkForNewGamepad = function()
 /**
  * Add gamepad
  *
- * @param {GamepadHandler} gamepad
+ * @param {Gamepad} gamepad
  */
 GamepadListener.prototype.addGamepad = function(gamepad)
 {
     var handler = new GamepadHandler(gamepad, this.options);
 
-    this.gamepads.push(gamepad);
+    handler.on('gamepad:axis', this.onAxis);
+    handler.on('gamepad:button', this.onButton);
 
-    handler.on('axis', this.onAxis);
-    handler.on('button', this.onButton);
+    this.emit('gamepad:connected', {gamepad: gamepad, index: gamepad.index});
 };
 
 /**
@@ -256,7 +249,7 @@ GamepadListener.prototype.addGamepad = function(gamepad)
  */
 GamepadListener.prototype.onAxis = function(event)
 {
-    this.emit('axis', event.detail);
+    this.emit('gamepad:axis', event.detail);
 };
 
 /**
@@ -266,7 +259,7 @@ GamepadListener.prototype.onAxis = function(event)
  */
 GamepadListener.prototype.onButton = function(event)
 {
-    this.emit('button', event.detail);
+    this.emit('gamepad:button', event.detail);
 };
 
 /**
