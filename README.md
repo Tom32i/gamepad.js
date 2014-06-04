@@ -3,6 +3,8 @@ gamepad.js
 
 Simple HTML5 Gamepad API handler
 
+Demo here: [http://tom32i.github.io/gamepad.js/](http://tom32i.github.io/gamepad.js/)
+
 ## Installation:
 
     bower install --save tom32i-gamepad.js
