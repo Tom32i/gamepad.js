@@ -69,8 +69,6 @@ GamepadListener.prototype.update = function()
  */
 GamepadListener.prototype.addGamepad = function(gamepad)
 {
-    console.log('addGamepad', gamepad);
-
     var handler = new GamepadHandler(gamepad, this.options);
 
     handler.on('axis', this.onAxis);
@@ -90,8 +88,6 @@ GamepadListener.prototype.addGamepad = function(gamepad)
 GamepadListener.prototype.removeGamepad = function(index)
 {
     var handler = this.handlers[index];
-
-    console.log('removeGamepad', index, handler, handler.gamepad);
 
     handler.off('axis', this.onAxis);
     handler.off('button', this.onButton);
