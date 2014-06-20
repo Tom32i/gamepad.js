@@ -3,48 +3,77 @@
     <head>
         <title></title>
         <style type="text/css">
-            .output {
+            body {
+                padding: 60px 0 0 0;
+                font-family: "Lucida Console", Monaco, monospace;
+            }
+            .column {
                 width: 25%;
                 float: left;
                 position: relative;
                 display: block;
-                min-height: 28px;
-                padding-top: 28px;
                 overflow: auto;
             }
-            .output h2 {
-                position: fixed;
+            .header {
                 top: 0;
+                position: fixed;
                 background: white;
-                width: 25%;
                 text-align: center;
+                border-bottom: 1px solid #E5E5E5;
+                width: 100%;
+                background-color: white;
+                z-index: 10;
             }
-            .output * {
+            .logs {
+                width: 100%;
+            }
+            .column h2 {
+                font-size: 20px;
+            }
+            .column h3 {
+                font-size: 14px;
+                font-weight: normal;
+            }
+            .column * {
                 margin: 0;
+            }
+            .output {
+                color: #333333;
             }
         </style>
     </head>
     <body>
-        <div id="output">
-            <div id="output-0" class="output">
+        <div class="header">
+            <div class="column">
                 <h2>Slot 0</h2>
+                <h3>No gamepad connected, press a button</h3>
             </div>
-            <div id="output-1" class="output">
+            <div class="column">
                 <h2>Slot 1</h2>
+                <h3>No gamepad connected, press a button</h3>
             </div>
-            <div id="output-2" class="output">
+            <div class="column">
                 <h2>Slot 2</h2>
+                <h3>No gamepad connected, press a button</h3>
             </div>
-            <div id="output-3" class="output">
+            <div class="column">
                 <h2>Slot 3</h2>
+                <h3>No gamepad connected, press a button</h3>
             </div>
+        </div>
+        <div class="logs">
+            <div class="column output"></div>
+            <div class="column output"></div>
+            <div class="column output"></div>
+            <div class="column output"></div>
         </div>
         <script src="dist/gamepad.js"></script>
         <script>
-            var outputs = document.getElementsByClassName('output');
+            var outputs = document.getElementsByClassName('output'),
+                names = document.getElementsByTagName('h3');
 
             function init() {
-                var listener = new GamepadListener();
+                var listener = new GamepadListener({eventType: 'global'});
 
                 console.log(listener);
 
@@ -53,6 +82,7 @@
                         id = e.detail.gamepad.id;
 
                     outputLog(index, "Connected: " + id, e.detail);
+                    names[index].innerHTML = id;
                 });
 
                 listener.on('gamepad:axis', function (e) {
@@ -75,7 +105,7 @@
 
             function outputLog (index, message, detail)
             {
-                outputs[index].innerHTML += "<p>" + message.toString() + "</p>";
+                outputs[index].innerHTML = "<p>" + message.toString() + "</p>" + outputs[index].innerHTML;
                 console.log(detail);
             }
 
