@@ -5,8 +5,6 @@ function GamepadListener(options)
 {
     EventEmitter.call(this);
 
-    this.distinctGamepad = typeof(options.distinctGamepad) != 'undefined' ?
-
     this.options  = this.resolveOptions(typeof(options) === 'object' ? options : {});
     this.frame    = null;
     this.update   = this.update.bind(this);

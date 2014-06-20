@@ -1,12 +1,12 @@
 /*!
- * gamepad.js 0.0.2
+ * gamepad.js 0.0.3
  * https://github.com/Tom32i/gamepad.js
  * Copyright 2014 Thomas JARRAND
  */
 
 function EventEmitter(){this._eventElement=document.createElement("div")}EventEmitter.prototype.emit=function(t,e){this._eventElement.dispatchEvent(new CustomEvent(t,{detail:e}))},EventEmitter.prototype.addEventListener=function(t,e){this._eventElement.addEventListener(t,e,!1)},EventEmitter.prototype.removeEventListener=function(t,e){this._eventElement.removeEventListener(t,e,!1)},EventEmitter.prototype.on=EventEmitter.prototype.addEventListener,EventEmitter.prototype.off=EventEmitter.prototype.removeEventListener;
 /*!
- * option-resolver.js 0.0.1
+ * option-resolver.js 0.0.2
  * https://github.com/Tom32i/option-resolver.js
  * Copyright 2014 Thomas JARRAND
  */
@@ -16,15 +16,16 @@ function OptionResolver(t){this.allowExtra="undefined"!=typeof t&&t,this.default
  * Gamepad Handler
  *
  * @param {Gamepad} gamepad
+ * @param {Object} options
  */
 function GamepadHandler(gamepad, options)
 {
     EventEmitter.call(this);
 
     this.gamepad = gamepad;
+    this.options = options;
     this.sticks  = new Array(this.gamepad.axes.length);
     this.buttons = new Array(this.gamepad.buttons.length);
-    this.options = this.resolveOptions(options);
 
     for (var s = this.sticks.length - 1; s >= 0; s--) {
         this.sticks[s] = [0, 0];
@@ -38,50 +39,6 @@ function GamepadHandler(gamepad, options)
 }
 
 GamepadHandler.prototype = Object.create(EventEmitter.prototype);
-GamepadHandler.prototype.constructor = GamepadHandler;
-
-/**
- * Option resolver
- *
- * @type {OptionResolver}
- */
-GamepadHandler.prototype.optionResolver = new OptionResolver(false);
-
-GamepadHandler.prototype.optionResolver.setDefaults({
-    analog: true,
-    deadZone: 0,
-    precision: 0
-});
-
-GamepadHandler.prototype.optionResolver.setTypes({
-    analog: 'boolean',
-    deadZone: 'number',
-    precision: 'number'
-});
-
-/**
- * Resolve options
- *
- * @param {Object} options
- *
- * @return {Object}
- */
-GamepadHandler.prototype.resolveOptions = function(source)
-{
-    var customStick = typeof source.stick !== 'undefined',
-        customButton = typeof source.button !== 'undefined',
-        options = {
-            stick: this.optionResolver.resolve(customStick ? source.stick : (customButton ? {} : source)),
-            button: this.optionResolver.resolve(customButton ? source.button : (customStick ? {} : source))
-        };
-
-    options.stick.deadZone   = Math.max(Math.min(options.stick.deadZone, 1), 0);
-    options.button.deadZone  = Math.max(Math.min(options.button.deadZone, 1), 0);
-    options.stick.precision  = options.stick.precision ? Math.pow(10, options.stick.precision) : 0;
-    options.button.precision = options.button.precision ? Math.pow(10, options.button.precision) : 0;
-
-    return options;
-};
 
 /**
  * Update
@@ -125,7 +82,7 @@ GamepadHandler.prototype.setStick = function(stick, axis, value, options)
 
     if (this.sticks[stick][axis] !== value) {
         this.sticks[stick][axis] = value;
-        this.emit('gamepad:axis', {
+        this.emit('axis', {
             gamepad: this.gamepad,
             axis: axis,
             value: this.sticks[stick][axis]
@@ -155,7 +112,7 @@ GamepadHandler.prototype.setButton = function(index, button, options)
 
     if (this.buttons[index] !== value) {
         this.buttons[index] = value;
-        this.emit('gamepad:button', {
+        this.emit('button', {
             gamepad: this.gamepad,
             button: button,
             index: index,
@@ -171,7 +128,7 @@ function GamepadListener(options)
 {
     EventEmitter.call(this);
 
-    this.options  = typeof(options) === 'object' ? options : {};
+    this.options  = this.resolveOptions(typeof(options) === 'object' ? options : {});
     this.frame    = null;
     this.update   = this.update.bind(this);
     this.onAxis   = this.onAxis.bind(this);
@@ -184,7 +141,51 @@ function GamepadListener(options)
 }
 
 GamepadListener.prototype = Object.create(EventEmitter.prototype);
-GamepadListener.prototype.constructor = GamepadListener;
+
+/**
+ * Option resolver
+ *
+ * @type {OptionResolver}
+ */
+GamepadListener.prototype.optionResolver = new OptionResolver(false);
+
+GamepadListener.prototype.optionResolver.setDefaults({
+    analog: true,
+    deadZone: 0,
+    precision: 0,
+    eventType: 'gamepad'
+});
+
+GamepadListener.prototype.optionResolver.setTypes({
+    analog: 'boolean',
+    deadZone: 'number',
+    precision: 'number',
+    eventType: 'string'
+});
+
+/**
+ * Resolve options
+ *
+ * @param {Object} options
+ *
+ * @return {Object}
+ */
+GamepadListener.prototype.resolveOptions = function(source)
+{
+    var customStick = typeof source.stick !== 'undefined',
+        customButton = typeof source.button !== 'undefined',
+        options = {
+            stick: this.optionResolver.resolve(customStick ? source.stick : (customButton ? {} : source)),
+            button: this.optionResolver.resolve(customButton ? source.button : (customStick ? {} : source))
+        };
+
+    options.stick.deadZone   = Math.max(Math.min(options.stick.deadZone, 1), 0);
+    options.button.deadZone  = Math.max(Math.min(options.button.deadZone, 1), 0);
+    options.stick.precision  = options.stick.precision ? Math.pow(10, options.stick.precision) : 0;
+    options.button.precision = options.button.precision ? Math.pow(10, options.button.precision) : 0;
+
+    return options;
+};
 
 /**
  * Start
@@ -249,7 +250,15 @@ GamepadListener.prototype.addGamepad = function(gamepad)
  */
 GamepadListener.prototype.onAxis = function(event)
 {
-    this.emit('gamepad:axis', event.detail);
+    var eventName = 'gamepad:axis';
+
+    if (this.options.eventType == 'gamepad') {
+        eventName = 'gamepad:' + event.detail.gamepad.index + ':axis';
+    } else if (this.options.eventType == 'key') {
+        eventName = 'gamepad:' + event.detail.gamepad.index + ':axis:' + event.detail.axis;
+    }
+
+    this.emit(eventName, event.detail);
 };
 
 /**
@@ -259,23 +268,15 @@ GamepadListener.prototype.onAxis = function(event)
  */
 GamepadListener.prototype.onButton = function(event)
 {
-    this.emit('gamepad:button', event.detail);
-};
+    var eventName = 'gamepad:button';
 
-/**
- * Get gamepad data event as a code
- *
- * @param {Object} data
- *
- * @return {String}
- */
-GamepadListener.prototype.getCode = function(data, gamepadIndex)
-{
-    if (typeof(data.axis) !== 'undefined') {
-        return 'gamepad:';
-    } else {
-
+    if (this.options.eventType == 'gamepad') {
+        eventName = 'gamepad:' + event.detail.gamepad.index + ':button';
+    } else if (this.options.eventType == 'key') {
+        eventName = 'gamepad:' + event.detail.gamepad.index + ':button:' + event.detail.index;
     }
+
+    this.emit(eventName, event.detail);
 };
 
 /**
