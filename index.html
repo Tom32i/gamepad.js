@@ -73,11 +73,10 @@
                 names = document.getElementsByTagName('h3');
 
             function init() {
-                var listener = new GamepadListener();
-
-                console.log(listener);
+                var listener = new GamepadListener({}, false);
 
                 listener.on('gamepad:connected', function (e) {
+                    console.log('connected', e);
                     var index = e.detail.gamepad.index,
                         id = e.detail.gamepad.id;
 
@@ -88,7 +87,7 @@
                 listener.on('gamepad:disconnected', function (e) {
                     var index = e.detail.index;
 
-                    outputLog(index, "Connected: " + names[index].innerHTML, e.detail);
+                    outputLog(index, "Disconnected: " + names[index].innerHTML, e.detail);
                     names[index].innerHTML = 'No gamepad connected, press a button';
                 });
 
@@ -108,6 +107,8 @@
 
                     outputLog(index, "Button [" + button + "] " + pressed + ": " + value, e.detail);
                 });
+
+                listener.start();
             }
 
             function outputLog (index, message, detail)
