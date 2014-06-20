@@ -9,7 +9,7 @@ function GamepadHandler(gamepad, options)
     EventEmitter.call(this);
 
     this.gamepad = gamepad;
-    this.options = options;
+    this.options = this.resolveOptions(typeof(options) === 'object' ? options : {});
     this.sticks  = new Array(this.gamepad.axes.length);
     this.buttons = new Array(this.gamepad.buttons.length);
 
@@ -25,6 +25,49 @@ function GamepadHandler(gamepad, options)
 }
 
 GamepadHandler.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Option resolver
+ *
+ * @type {OptionResolver}
+ */
+GamepadHandler.prototype.optionResolver = new OptionResolver(false);
+
+GamepadHandler.prototype.optionResolver.setDefaults({
+    analog: true,
+    deadZone: 0,
+    precision: 0
+});
+
+GamepadHandler.prototype.optionResolver.setTypes({
+    analog: 'boolean',
+    deadZone: 'number',
+    precision: 'number'
+});
+
+/**
+ * Resolve options
+ *
+ * @param {Object} options
+ *
+ * @return {Object}
+ */
+GamepadHandler.prototype.resolveOptions = function(source)
+{
+    var customStick = typeof source.stick !== 'undefined',
+        customButton = typeof source.button !== 'undefined',
+        options = {
+            stick: this.optionResolver.resolve(customStick ? source.stick : (customButton ? {} : source)),
+            button: this.optionResolver.resolve(customButton ? source.button : (customStick ? {} : source))
+        };
+
+    options.stick.deadZone   = Math.max(Math.min(options.stick.deadZone, 1), 0);
+    options.button.deadZone  = Math.max(Math.min(options.button.deadZone, 1), 0);
+    options.stick.precision  = options.stick.precision ? Math.pow(10, options.stick.precision) : 0;
+    options.button.precision = options.button.precision ? Math.pow(10, options.button.precision) : 0;
+
+    return options;
+};
 
 /**
  * Update

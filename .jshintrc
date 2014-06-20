@@ -25,6 +25,9 @@
         "CustomEvent",
         "Event",
         "console",
-        "navigator"
+        "navigator",
+        "EventEmitter",
+        "OptionResolver",
+        "GamepadHandler"
     ]
 }

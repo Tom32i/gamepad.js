@@ -28,18 +28,12 @@ Percent of noise to ignore around 0.
 Ex: deadZone set to 0.3 will cause stick position of from -0.3 to 0.3 to be considered 0.
 Stick moves below 30% from default positon won't trigger a change.
 
-__eventType:__ (String: default 'gamepad', available 'gamepad', 'key', 'global')
-* global: Send 'gamepad:axis' and 'gamepad:button' each time an axis or a button state change.
-* gamepad: Send 'gamepad:(index):axis' and 'gamepad:(index):button' where '(index)' is the index of the gamepad, allowing you to listen to a specific gamepad.
-* key: Send 'gamepad:(gamepadIndex):axis:(axisIndex)' and 'gamepad:(gamepadIndex):button:(buttonIndex)' where '(gamepadIndex)' is the index of the gamepad and '(axisIndex)' / 'buttonIndex' is the index of the axis/button, allowing you to listen to a specific button or axis.
-
 Theses options can be set for the whole gamepad:
 
 ```javascript
 var listener = new GamepadListener({
     analog: false,
-    deadZone: 0.3,
-    eventType: 'key'
+    deadZone: 0.3
 });
 ```
 
@@ -59,7 +53,16 @@ var listener = new GamepadListener({
 
 ## Events:
 
-Listen for value change on gampads:
+* 'gamepad:connected': When a new gamepad is connected.
+* 'gamepad:disconnected': When a gamepad is disconnected.
+* 'gamepad:axis': When a gamepad axis changes.
+* 'gamepad:{gamepad}:axis': When a specific gamepad axis changes, '{gamepad}' being the numeric index.
+* 'gamepad:{gamepad}:axis:{axis}': When a specific axis on a specific gamepad changes, '{axis}' being the numeric index of the axis.
+* 'gamepad:button': When a gamepad button changes.
+* 'gamepad:{gamepad}:button': When a specific gamepad button changes, '{gamepad}' being the numeric index.
+* 'gamepad:{gamepad}:button:{button}': When a specific button on a specific gamepad changes, '{button}' being the numeric index of the button.
+
+__Listen for value change on gampads:__
 
 ```javascript
 
@@ -68,6 +71,15 @@ listener.on('gamepad:connected',  function (event) {
      * event: CustomEvent
      *   detail: {
      *       gamepad: Gamepad,
+     *       index: 0
+     *   }
+     */
+});
+
+listener.on('gamepad:disconnected',  function (event) {
+    /**
+     * event: CustomEvent
+     *   detail: {
      *       index: 0
      *   }
      */
