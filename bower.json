@@ -18,8 +18,8 @@
   ],
   "main": "dist/gamepad.min.js",
   "dependencies": {
-    "tom32i-event-emitter.js": "~0.0.1",
-    "tom32i-option-resolver.js": "~0.0.3"
+    "tom32i-event-emitter.js": "~0.0.*",
+    "tom32i-option-resolver.js": "~0.0.*"
   },
   "ignore": [
     "**/.*",
