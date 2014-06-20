@@ -73,7 +73,7 @@
                 names = document.getElementsByTagName('h3');
 
             function init() {
-                var listener = new GamepadListener({eventType: 'global'});
+                var listener = new GamepadListener();
 
                 console.log(listener);
 
@@ -83,6 +83,13 @@
 
                     outputLog(index, "Connected: " + id, e.detail);
                     names[index].innerHTML = id;
+                });
+
+                listener.on('gamepad:disconnected', function (e) {
+                    var index = e.detail.index;
+
+                    outputLog(index, "Connected: " + names[index].innerHTML, e.detail);
+                    names[index].innerHTML = 'No gamepad connected, press a button';
                 });
 
                 listener.on('gamepad:axis', function (e) {
