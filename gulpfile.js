@@ -40,7 +40,7 @@ gulp.task('min', function(){
         .pipe(gulp.dest(distDir));
 });
 
-gulp.task('watch', function () {
+gulp.task('watch', ['default'], function () {
     gulp.watch(srcDir + '**/*.js', ['default']);
 });
 

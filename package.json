@@ -1,6 +1,6 @@
 {
   "name": "gamepad.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple HTML5 Gamepad API handler",
   "keywords": [
     "gamepad",

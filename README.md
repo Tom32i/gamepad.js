@@ -28,12 +28,18 @@ Percent of noise to ignore around 0.
 Ex: deadZone set to 0.3 will cause stick position of from -0.3 to 0.3 to be considered 0.
 Stick moves below 30% from default positon won't trigger a change.
 
+__eventType:__ (String: default 'gamepad', available 'gamepad', 'key', 'global')
+* global: Send 'gamepad:axis' and 'gamepad:button' each time an axis or a button state change.
+* gamepad: Send 'gamepad:(index):axis' and 'gamepad:(index):button' where '(index)' is the index of the gamepad, allowing you to listen to a specific gamepad.
+* key: Send 'gamepad:(gamepadIndex):axis:(axisIndex)' and 'gamepad:(gamepadIndex):button:(buttonIndex)' where '(gamepadIndex)' is the index of the gamepad and '(axisIndex)' / 'buttonIndex' is the index of the axis/button, allowing you to listen to a specific button or axis.
+
 Theses options can be set for the whole gamepad:
 
 ```javascript
 var listener = new GamepadListener({
     analog: false,
-    deadZone: 0.3
+    deadZone: 0.3,
+    eventType: 'key'
 });
 ```
 
@@ -78,7 +84,7 @@ listener.on('gamepad:axis', function (event) {
      */
 });
 
-listener.on('gamepad:button',  function (event) {
+listener.on('gamepad:0:button',  function (event) {
     /**
      * event: CustomEvent
      *   detail: {
@@ -87,6 +93,19 @@ listener.on('gamepad:button',  function (event) {
      *       pressed: true,
      *       index: 7,
      *       value: 0.56
+     *   }
+     */
+});
+
+listener.on('gamepad:0:button:5',  function (event) {
+    /**
+     * event: CustomEvent
+     *   detail: {
+     *       gamepad: Gamepad,
+     *       button: GamepadButton,
+     *       pressed: true,
+     *       index: 5,
+     *       value: 1
      *   }
      */
 });

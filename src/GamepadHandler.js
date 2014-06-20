@@ -2,15 +2,16 @@
  * Gamepad Handler
  *
  * @param {Gamepad} gamepad
+ * @param {Object} options
  */
 function GamepadHandler(gamepad, options)
 {
     EventEmitter.call(this);
 
     this.gamepad = gamepad;
+    this.options = options;
     this.sticks  = new Array(this.gamepad.axes.length);
     this.buttons = new Array(this.gamepad.buttons.length);
-    this.options = this.resolveOptions(options);
 
     for (var s = this.sticks.length - 1; s >= 0; s--) {
         this.sticks[s] = [0, 0];
@@ -24,50 +25,6 @@ function GamepadHandler(gamepad, options)
 }
 
 GamepadHandler.prototype = Object.create(EventEmitter.prototype);
-GamepadHandler.prototype.constructor = GamepadHandler;
-
-/**
- * Option resolver
- *
- * @type {OptionResolver}
- */
-GamepadHandler.prototype.optionResolver = new OptionResolver(false);
-
-GamepadHandler.prototype.optionResolver.setDefaults({
-    analog: true,
-    deadZone: 0,
-    precision: 0
-});
-
-GamepadHandler.prototype.optionResolver.setTypes({
-    analog: 'boolean',
-    deadZone: 'number',
-    precision: 'number'
-});
-
-/**
- * Resolve options
- *
- * @param {Object} options
- *
- * @return {Object}
- */
-GamepadHandler.prototype.resolveOptions = function(source)
-{
-    var customStick = typeof source.stick !== 'undefined',
-        customButton = typeof source.button !== 'undefined',
-        options = {
-            stick: this.optionResolver.resolve(customStick ? source.stick : (customButton ? {} : source)),
-            button: this.optionResolver.resolve(customButton ? source.button : (customStick ? {} : source))
-        };
-
-    options.stick.deadZone   = Math.max(Math.min(options.stick.deadZone, 1), 0);
-    options.button.deadZone  = Math.max(Math.min(options.button.deadZone, 1), 0);
-    options.stick.precision  = options.stick.precision ? Math.pow(10, options.stick.precision) : 0;
-    options.button.precision = options.button.precision ? Math.pow(10, options.button.precision) : 0;
-
-    return options;
-};
 
 /**
  * Update
@@ -111,7 +68,7 @@ GamepadHandler.prototype.setStick = function(stick, axis, value, options)
 
     if (this.sticks[stick][axis] !== value) {
         this.sticks[stick][axis] = value;
-        this.emit('gamepad:axis', {
+        this.emit('axis', {
             gamepad: this.gamepad,
             axis: axis,
             value: this.sticks[stick][axis]
@@ -141,7 +98,7 @@ GamepadHandler.prototype.setButton = function(index, button, options)
 
     if (this.buttons[index] !== value) {
         this.buttons[index] = value;
-        this.emit('gamepad:button', {
+        this.emit('button', {
             gamepad: this.gamepad,
             button: button,
             index: index,

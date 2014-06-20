@@ -263,6 +263,22 @@ GamepadListener.prototype.onButton = function(event)
 };
 
 /**
+ * Get gamepad data event as a code
+ *
+ * @param {Object} data
+ *
+ * @return {String}
+ */
+GamepadListener.prototype.getCode = function(data, gamepadIndex)
+{
+    if (typeof(data.axis) !== 'undefined') {
+        return 'gamepad:';
+    } else {
+
+    }
+};
+
+/**
  * Get gampads
  *
  * @return {GamepadList}
