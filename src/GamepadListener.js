@@ -129,5 +129,7 @@ GamepadListener.prototype.onButton = function(event)
  */
 GamepadListener.prototype.getGamepads = function()
 {
-    return typeof(navigator.getGamepads) !== 'undefined' ? navigator.getGamepads() : [];
+    var gamepads = typeof(navigator.getGamepads) !== 'undefined' ? navigator.getGamepads() : null;
+
+    return typeof(gamepads) === 'object' ? gamepads : [];
 };
