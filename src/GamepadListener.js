@@ -131,5 +131,5 @@ GamepadListener.prototype.getGamepads = function()
 {
     var gamepads = typeof(navigator.getGamepads) !== 'undefined' ? navigator.getGamepads() : null;
 
-    return typeof(gamepads) === 'object' ? gamepads : [];
+    return gamepads && typeof(gamepads) === 'object' ? gamepads : [];
 };
