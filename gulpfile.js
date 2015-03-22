@@ -25,6 +25,13 @@ gulp.task('jshint', function() {
         .pipe(jshint.reporter());
 });
 
+gulp.task('source', function() {
+    gulp.src(srcDir + '**/*.js')
+        .pipe(concat(meta.name.replace('.js', '.src.js')))
+        .pipe(header(banner, meta))
+        .pipe(gulp.dest(distDir));
+});
+
 gulp.task('full', function() {
     gulp.src(vendors.concat([srcDir + '**/*.js']))
         .pipe(concat(meta.name))
@@ -44,4 +51,4 @@ gulp.task('watch', ['default'], function () {
     gulp.watch(srcDir + '**/*.js', ['default']);
 });
 
-gulp.task('default', ['jshint', 'full', 'min']);
+gulp.task('default', ['jshint', 'source', 'full', 'min']);
