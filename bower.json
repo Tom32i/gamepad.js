@@ -1,6 +1,6 @@
 {
   "name": "gamepad.js",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Simple HTML5 Gamepad API handler",
   "keywords": [
     "gamepad",
@@ -18,7 +18,7 @@
   ],
   "main": "dist/gamepad.min.js",
   "dependencies": {
-    "tom32i-event-emitter.js": "~0.0.*",
+    "tom32i-event-emitter.js": "~0.1.*",
     "tom32i-option-resolver.js": "~0.0.*"
   },
   "ignore": [

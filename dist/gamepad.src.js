@@ -1,5 +1,5 @@
 /*!
- * gamepad.js 0.0.6
+ * gamepad.js 0.1.0
  * https://github.com/Tom32i/gamepad.js
  * Copyright 2014 Thomas JARRAND
  */

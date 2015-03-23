@@ -1,16 +1,16 @@
 /*!
- * gamepad.js 0.0.6
+ * gamepad.js 0.1.0
  * https://github.com/Tom32i/gamepad.js
  * Copyright 2014 Thomas JARRAND
  */
 
 /*!
- * event-emitter.js 0.0.2
+ * event-emitter.js 0.1.0
  * https://github.com/Tom32i/event-emitter.js
  * Copyright 2014 Thomas JARRAND
  */
 
-function EventEmitter(){this._events={}}EventEmitter.prototype.emit=function(t,e){if("undefined"!=typeof this._events[t])for(var n=this._events[t],i=n.length,o={type:t,detail:e},v=0;i>v;v++)n[v](o)},EventEmitter.prototype.addEventListener=function(t,e){"undefined"==typeof this._events[t]&&(this._events[t]=[]),this._events[t].push(e)},EventEmitter.prototype.removeEventListener=function(t,e){if("undefined"!=typeof this._events[t]){var n=this._events[t],i=n.indexOf(e);i>=0&&n.splice(i,1),n.length||delete this._events[t]}},EventEmitter.prototype.on=EventEmitter.prototype.addEventListener,EventEmitter.prototype.off=EventEmitter.prototype.removeEventListener;
+function EventEmitter(){this._events={}}EventEmitter.prototype.emit=function(e,t){if("undefined"!=typeof this._events[e])for(var n=this._events[e],i=n.length,o={type:e,detail:t},s=0;i>s;s++)n[s](o)},EventEmitter.prototype.addEventListener=function(e,t){"undefined"==typeof this._events[e]&&(this._events[e]=[]),this._events[e].indexOf(t)<0&&this._events[e].push(t)},EventEmitter.prototype.removeEventListener=function(e,t){if("undefined"!=typeof this._events[e]){var n=this._events[e],i=n.indexOf(t);i>=0&&n.splice(i,1),n.length||delete this._events[e]}},EventEmitter.prototype.on=EventEmitter.prototype.addEventListener,EventEmitter.prototype.off=EventEmitter.prototype.removeEventListener;
 /*!
  * option-resolver.js 0.0.2
  * https://github.com/Tom32i/option-resolver.js
