@@ -7,7 +7,7 @@ Demo here: [http://tom32i.github.io/gamepad.js/](http://tom32i.github.io/gamepad
 
 ## Installation:
 
-    bower install --save tom32i-gamepad.js
+    npm i gamepad.js
 
 ## Usage:
 
