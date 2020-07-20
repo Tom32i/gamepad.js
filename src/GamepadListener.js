@@ -1,135 +1,130 @@
+import EventEmitter from 'tom32i-event-emitter.js';
+import GamepadHandler from 'gamepad/GamepadHandler';
+import Loop from 'gamepad/Loop';
+
 /**
  * Gamepad Listener
  */
-function GamepadListener(options)
-{
-    EventEmitter.call(this);
+export default class GamepadListener extends EventEmitter {
+    constructor(options = {}) {
+        super();
 
-    this.options  = typeof(options) === 'object' ? options : {};
-    this.frame    = null;
-    this.update   = this.update.bind(this);
-    this.onAxis   = this.onAxis.bind(this);
-    this.onButton = this.onButton.bind(this);
-    this.stop     = this.stop.bind(this);
-    this.handlers = new Array(4);
+        if (typeof navigator.getGamepads !== 'function') {
+            throw new Error('This browser does not support gamepad API.');
+        }
 
-    window.addEventListener('error', this.stop);
+        this.options = options;
+        this.onAxis = this.onAxis.bind(this);
 
-}
+        this.update = this.update.bind(this);
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
+        this.discover = this.discover.bind(this);
+        this.onButton = this.onButton.bind(this);
 
-GamepadListener.prototype = Object.create(EventEmitter.prototype);
+        this.handlers = new Array(4).fill(null);
+        this.loop = new Loop(this.update);
 
-/**
- * Start
- */
-GamepadListener.prototype.start = function()
-{
-    if (!this.frame) {
-        this.update();
+        window.addEventListener('error', this.stop);
     }
-};
 
-/**
- * Stop
- */
-GamepadListener.prototype.stop = function()
-{
-    if (this.frame) {
-        window.cancelAnimationFrame(this.frame);
-        this.frame = null;
+    start() {
+        this.loop.start();
     }
-};
 
-/**
- * Update
- */
-GamepadListener.prototype.update = function()
-{
-    this.frame = window.requestAnimationFrame(this.update);
+    stop() {
+        this.loop.stop();
+    }
 
-    var gamepads = this.getGamepads();
+    /**
+     * Update
+     */
+    update() {
+        const gamepads = navigator.getGamepads();
 
-    for (var i = gamepads.length - 1; i >= 0; i--) {
-        if (gamepads[i]) {
-            if (typeof(gamepads[i].handler) === 'undefined') {
-                this.addGamepad(gamepads[i]);
+        this.discover(gamepads[0], 0);
+        this.discover(gamepads[1], 1);
+        this.discover(gamepads[2], 2);
+        this.discover(gamepads[3], 3);
+    }
+
+    discover(gamepad, index) {
+        if (gamepad) {
+            if (!this.handlers[index]) {
+                this.registerHandler(index, gamepad);
             }
 
-            gamepads[i].handler.update();
-        } else if (this.handlers[i]) {
-            this.removeGamepad(i);
+            this.handlers[index].update(gamepad);
+        } else {
+            if (this.handlers[index]) {
+                this.removeGamepad(index);
+            }
         }
     }
-};
 
-/**
- * Add gamepad
- *
- * @param {Gamepad} gamepad
- */
-GamepadListener.prototype.addGamepad = function(gamepad)
-{
-    var handler = new GamepadHandler(gamepad, this.options);
+    /**
+     * Add gamepad
+     *
+     * @param {Number} index
+     * @param {Gamepad} gamepad
+     */
+    registerHandler(index, gamepad) {
+        if (this.handlers[index]) {
+            throw new Error(`Gamepad #${index} is already registered.`);
+        }
 
-    handler.on('axis', this.onAxis);
-    handler.on('button', this.onButton);
+        const handler = new GamepadHandler(index, gamepad, this.options);
 
-    this.emit('gamepad:connected', {gamepad: gamepad, index: gamepad.index});
-    this.emit('gamepad:' + gamepad.index + ':connected', {gamepad: gamepad, index: gamepad.index});
+        this.handlers[index] = handler;
 
-    this.handlers[gamepad.index] = handler;
-};
+        handler.addEventListener('axis', this.onAxis);
+        handler.addEventListener('button', this.onButton);
 
-/**
- * Add gamepad
- *
- * @param {Gamepad} gamepad
- */
-GamepadListener.prototype.removeGamepad = function(index)
-{
-    var handler = this.handlers[index];
+        this.emit('gamepad:connected', { index, gamepad });
+        this.emit(`gamepad:${index}:connected`, { index, gamepad });
+    }
 
-    handler.off('axis', this.onAxis);
-    handler.off('button', this.onButton);
+    /**
+     * Remove gamepad
+     *
+     * @param {Number} index
+     */
+    removeGamepad(index) {
+        if (!this.handlers[index]) {
+            throw new Error(`Gamepad #${index} is not registered.`);
+        }
 
-    this.emit('gamepad:disconnected', {index: index});
-    this.emit('gamepad:' + index + ':disconnected', {index: index});
+        this.handlers[index].removeEventListener('axis', this.onAxis);
+        this.handlers[index].removeEventListener('button', this.onButton);
+        this.handlers[index] = null;
 
-    this.handlers[index] = null;
-};
+        this.emit('gamepad:disconnected', { index });
+        this.emit(`gamepad:${index}:disconnected`, { index });
+    }
 
-/**
- * On axe
- *
- * @param {Event} event
- */
-GamepadListener.prototype.onAxis = function(event)
-{
-    this.emit('gamepad:axis', event.detail);
-    this.emit('gamepad:' + event.detail.gamepad.index + ':axis', event.detail);
-    this.emit('gamepad:' + event.detail.gamepad.index + ':axis:' + event.detail.axis, event.detail);
-};
+    /**
+     * On axis
+     *
+     * @param {Event} event
+     */
+    onAxis(event) {
+        const { index } = event.detail;
 
-/**
- * On button
- *
- * @param {Event} event
- */
-GamepadListener.prototype.onButton = function(event)
-{
-    this.emit('gamepad:button', event.detail);
-    this.emit('gamepad:' + event.detail.gamepad.index + ':button', event.detail);
-    this.emit('gamepad:' + event.detail.gamepad.index + ':button:' + event.detail.index, event.detail);
-};
+        this.emit('gamepad:axis', event.detail);
+        this.emit(`gamepad:${index}:axis`, event.detail);
+        this.emit(`gamepad:${index}:axis:${event.detail.axis}`, event.detail);
+    }
 
-/**
- * Get gampads
- *
- * @return {GamepadList}
- */
-GamepadListener.prototype.getGamepads = function()
-{
-    var gamepads = typeof(navigator.getGamepads) !== 'undefined' ? navigator.getGamepads() : null;
+    /**
+     * On button
+     *
+     * @param {Event} event
+     */
+    onButton(event) {
+        const { index } = event.detail;
 
-    return gamepads && typeof(gamepads) === 'object' ? gamepads : [];
-};
+        this.emit('gamepad:button', event.detail);
+        this.emit(`gamepad:${index}:button`, event.detail);
+        this.emit(`gamepad:${index}:button:${event.detail.button}`, event.detail);
+    }
+}
