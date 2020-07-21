@@ -1,123 +1,151 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title>Gamepad.js</title>
         <style type="text/css">
+            body, html {
+                height: 100%;
+            }
             body {
-                padding: 60px 0 0 0;
+                padding: 0;
+                margin: 0;
+                height: 100%;
                 font-family: "Lucida Console", Monaco, monospace;
+                overflow: hidden;
+                box-sizing: border-box;
             }
+
+            .gamepads {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                display: flex;
+                flex-direction: row;
+            }
+
             .column {
-                width: 25%;
-                float: left;
-                position: relative;
-                display: block;
-                overflow: auto;
+                flex: 1;
+                height: 100%;
+                max-width: 100%;
+                border-left: 1px solid #ccc;
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
             }
+
             .header {
-                top: 0;
-                position: fixed;
-                background: white;
                 text-align: center;
-                border-bottom: 1px solid #E5E5E5;
-                width: 100%;
-                background-color: white;
-                z-index: 10;
+                background-color: #efefef;
+                border-bottom: 1px solid #ccc;
+                padding: 10px;
             }
-            .logs {
-                width: 100%;
-            }
+
             .column h2 {
-                font-size: 20px;
+                font-size: 16px;
+                line-height: 24px;
             }
+
             .column h3 {
-                font-size: 14px;
+                font-size: 13px;
+                line-height: 16px;
                 font-weight: normal;
             }
             .column * {
                 margin: 0;
             }
             .output {
-                color: #333333;
+                background-color: #333333;
+                color: #a3e40d;
+                flex-grow: 1;
+                overflow-y: auto;
+                padding: 10px;
+                line-height: 1.2;
+                white-space: pre-wrap;
+                max-width: 100%;
             }
         </style>
     </head>
     <body>
-        <div class="header">
+        <div class="gamepads">
             <div class="column">
-                <h2>Slot 0</h2>
-                <h3>No gamepad connected, press a button</h3>
+                <div class="header">
+                    <h2>Slot 0</h2>
+                    <h3>No gamepad connected, press a button</h3>
+                </div>
+                <div class="output"></div>
             </div>
             <div class="column">
-                <h2>Slot 1</h2>
-                <h3>No gamepad connected, press a button</h3>
+                <div class="header">
+                    <h2>Slot 1</h2>
+                    <h3>No gamepad connected, press a button</h3>
+                </div>
+                <div class="output"></div>
             </div>
             <div class="column">
-                <h2>Slot 2</h2>
-                <h3>No gamepad connected, press a button</h3>
+                <div class="header">
+                    <h2>Slot 2</h2>
+                    <h3>No gamepad connected, press a button</h3>
+                </div>
+                <div class="output"></div>
             </div>
             <div class="column">
-                <h2>Slot 3</h2>
-                <h3>No gamepad connected, press a button</h3>
+                <div class="header">
+                    <h2>Slot 3</h2>
+                    <h3>No gamepad connected, press a button</h3>
+                </div>
+                <div class="output"></div>
             </div>
         </div>
-        <div class="logs">
-            <div class="column output"></div>
-            <div class="column output"></div>
-            <div class="column output"></div>
-            <div class="column output"></div>
-        </div>
-        <script src="dist/gamepad.js"></script>
+        <script src="/gamepad.js"></script>
         <script>
-            var outputs = document.getElementsByClassName('output'),
-                names = document.getElementsByTagName('h3');
+            window.addEventListener('load', () => {
+                const { GamepadListener } = gamepad;
+                const outputs = document.getElementsByClassName('output');
+                const titles = document.getElementsByTagName('h3');
 
-            function init() {
-                var listener = new GamepadListener({}, false);
+                function output(index, message) {
+                    const container = outputs[index];
+                    container.innerText = message.toString() + '\n' + container.innerText;
+                }
 
-                listener.on('gamepad:connected', function (e) {
-                    console.log('connected', e);
-                    var index = e.detail.gamepad.index,
-                        id = e.detail.gamepad.id;
+                const listener = new GamepadListener({ precision: 2 });
 
-                    outputLog(index, "Connected: " + id, e.detail);
-                    names[index].innerHTML = id;
+                listener.on('gamepad:connected', event => {
+                    const { index, gamepad } = event.detail;
+                    const title = titles[index];
+
+                    if (typeof title.defaultText === 'undefined') {
+                        title.defaultText = title.innerText;
+                    }
+
+                    title.innerText = gamepad.id;
+
+                    output(index, `Connected: ${gamepad.id}`, event.detail);
                 });
 
-                listener.on('gamepad:disconnected', function (e) {
-                    var index = e.detail.index;
+                listener.on('gamepad:disconnected', event => {
+                    const { index } = event.detail;
+                    const title = titles[index];
 
-                    outputLog(index, "Disconnected: " + names[index].innerHTML, e.detail);
-                    names[index].innerHTML = 'No gamepad connected, press a button';
+                    output(index, 'Disconnected', event.detail);
+
+                    title.innerText = title.defaultText;
                 });
 
-                listener.on('gamepad:axis', function (e) {
-                    var index = e.detail.gamepad.index,
-                        axis = e.detail.axis,
-                        value = e.detail.value;
+                listener.on('gamepad:axis', event => {
+                    const { index, stick, axis, value } = event.detail;
 
-                    outputLog(index, "Axis [" + axis + "]: " + value, e.detail);
+                    output(index, `Sitck [${stick}], axis [${axis}]: ${value}`, event.detail);
                 });
 
-                listener.on('gamepad:button', function (e) {
-                    var index = e.detail.gamepad.index,
-                        button = e.detail.index,
-                        pressed = e.detail.pressed ? 'pressed' : 'released',
-                        value = e.detail.value;
+                listener.on('gamepad:button', event => {
+                    const { index, button, value, pressed } = event.detail;
 
-                    outputLog(index, "Button [" + button + "] " + pressed + ": " + value, e.detail);
+                    output(index, "Button [" + button + "] " + (pressed ? 'pressed' : 'released') + ": " + value, event.detail);
                 });
 
                 listener.start();
-            }
-
-            function outputLog (index, message, detail)
-            {
-                outputs[index].innerHTML = "<p>" + message.toString() + "</p>" + outputs[index].innerHTML;
-                console.log(detail);
-            }
-
-            window.addEventListener('load', init);
+            });
         </script>
     </body>
 </html>
