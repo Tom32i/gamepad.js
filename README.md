@@ -34,6 +34,7 @@ const { GamepadListener } = require('gamepad.js');
 
 ```javascript
 const listener = new GamepadListener(/* options*/);
+listener.start();
 ```
 
 ### Configuration:
