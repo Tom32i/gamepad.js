@@ -49,16 +49,17 @@ export default class GamepadHandler extends EventEmitter {
      */
     update(gamepad) {
         let index = 0;
+        const sticks = this.sticks.length;
 
-        for (let stick = 0; stick < 2; stick++) {
+        for (let stick = 0; stick < sticks; stick++) {
             for (let axis = 0; axis < 2; axis++) {
                 this.updateStick(gamepad, stick, axis, gamepad.axes[index++]);
             }
         }
 
-        const { length } = gamepad.buttons;
+        const buttons = this.buttons.length;
 
-        for (index = 0; index < length; index++) {
+        for (index = 0; index < buttons; index++) {
             this.updateButton(gamepad, gamepad.buttons[index], index);
         }
     }

@@ -1,6 +1,6 @@
 {
   "name": "gamepad.js",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad sticks and button",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
@@ -19,16 +19,16 @@
   ],
   "main": "gamepad.js",
   "dependencies": {
-    "option-resolver.js": "^0.1.0",
-    "tom32i-event-emitter.js": "^2.0.3"
+    "option-resolver.js": "^0.1.1",
+    "tom32i-event-emitter.js": "^2.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
     "babel-loader": "^8.1.0",
     "eslint": "^5.16.0",
     "mocha": "^8.0.1",
-    "webpack": "^4.43.0",
+    "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   }
 }
