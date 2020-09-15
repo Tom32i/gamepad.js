@@ -1,6 +1,6 @@
 {
   "name": "gamepad.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad sticks and button",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
@@ -17,6 +17,12 @@
     "src/*",
     "gamepad.js"
   ],
+  "scripts": {
+    "watch": "webpack --watch --mode=development",
+    "build": "webpack --mode=production",
+    "test": "mocha",
+    "lint": "eslint src/* --ext .js,.json --fix"
+  },
   "main": "gamepad.js",
   "dependencies": {
     "option-resolver.js": "^0.1.1",
@@ -28,6 +34,7 @@
     "babel-loader": "^8.1.0",
     "eslint": "^5.16.0",
     "mocha": "^8.0.1",
+    "sinon": "^9.0.3",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   }
