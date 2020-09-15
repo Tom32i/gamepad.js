@@ -7,23 +7,23 @@ install:
 
 # Launch watch
 watch:
-	npx webpack --watch --mode=development
+	npm run watch
 
 # Build lib
 build:
-	npx webpack --mode=production
+	npm run build
 
 # Launch demo client
 demo:
-	php -S 0.0.0.0:8000 -t .
+	php -S 0.0.0.0:8032 -t .
 
 # Lint and code style fix
 lint:
-	npx eslint src/* --ext .js,.json --fix
+	npm run lint
 
 # Test
 test: build
-	npx mocha
+	npm run test
 
 # Publish package
 publish: build
