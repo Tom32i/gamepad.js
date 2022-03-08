@@ -13,8 +13,8 @@ export default class GamepadHandler extends EventEmitter {
 
         this.index = index;
         this.options = this.constructor.resolveOptions(options);
-        this.sticks = new Array(gamepad.axes.length / 2).fill(null).map(() => [null, null]);
-        this.buttons = new Array(gamepad.buttons.length).fill(null);
+        this.sticks = new Array(gamepad.axes.length === 0 ? 0 : gamepad.axes.length / 2).fill(null).map(() => [null, null]);
+        this.buttons = new Array(gamepad.buttons.length === 0 ? 0 : gamepad.buttons.length).fill(null);
 
         this.updateStick = this.updateStick.bind(this);
         this.updateButton = this.updateButton.bind(this);
