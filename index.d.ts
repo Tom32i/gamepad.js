@@ -7,9 +7,52 @@ declare module "gamepad.js" {
     discover: (gamepad: Gamepad, index: number) => void;
     registerHandler: (index: number, gamepad: Gamepad) => void;
     removeGamepad: (index: number) => void;
-    onAxis: (event: Event) => void;
-    on: GamepadEvent;
-    off: GamepadEvent;
+    onAxis: (event: GamepadAxisEvent) => void;
+    onButton: (event: GamepadButtonEvent) => void;
+    public on(
+      event: "gamepad:connected",
+      handler: (e: GamepadConnectEvent) => void
+    ): void;
+    public on(
+      event: "gamepad:disconnected",
+      handler: (e: GamepadDisconnectEvent) => void
+    ): void;
+    public on(
+      event:
+        | "gamepad:button"
+        | `gamepad:${number}:button`
+        | `gamepad:${number}:button:${number}`,
+      handler: (e: GamepadButtonEvent) => void
+    ): void;
+    public on(
+      event:
+        | "gamepad:axis"
+        | `gamepad:${number}:axis`
+        | `gamepad:${number}:axis:${number}`,
+      handler: (e: GamepadAxisEvent) => void
+    ): void;
+    public off(
+      event: "gamepad:connected",
+      handler: (e: GamepadConnectEvent) => void
+    ): void;
+    public off(
+      event: "gamepad:disconnected",
+      handler: (e: GamepadDisconnectEvent) => void
+    ): void;
+    public off(
+      event:
+        | "gamepad:button"
+        | `gamepad:${number}:button`
+        | `gamepad:${number}:button:${number}`,
+      handler: (e: GamepadButtonEvent) => void
+    ): void;
+    public off(
+      event:
+        | "gamepad:axis"
+        | `gamepad:${number}:axis`
+        | `gamepad:${number}:axis:${number}`,
+      handler: (e: GamepadAxisEvent) => void
+    ): void;
   }
 
   class GamepadHandler {
@@ -42,17 +85,31 @@ declare module "gamepad.js" {
     };
   }
 
-  type GamepadEvent = (
-    event:
-      | "gamepad:connected"
-      | "gamepad:disconnected"
-      | "gamepad:axis"
-      | `gamepad:${number}:axis`
-      | `gamepad:${number}:axis:${number}`
-      | "gamepad:button"
-      | `gamepad:${number}:button`
-      | `gamepad:${number}:button:${number}`
-      | string,
-    handler: (e: Event) => void
-  ) => void;
+  interface GamepadAxisEvent {
+    detail: {
+      index: number;
+      value: number;
+      stick: number;
+      axis: number;
+      gamepad: Gamepad;
+    };
+  }
+
+  interface GamepadButtonEvent {
+    detail: {
+      index: number;
+      value: number;
+      pressed: boolean;
+      button: number;
+      gamepad: Gamepad;
+    };
+  }
+
+  interface GamepadConnectEvent {
+    detail: { index: number; gamepad: Gamepad };
+  }
+
+  interface GamepadDisconnectEvent {
+    detail: { index: number };
+  }
 }
