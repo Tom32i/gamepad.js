@@ -26,5 +26,13 @@ module.exports = {
     alias: {
       'gamepad': `${__dirname}/src`,
     }
-  }
+  },
+  devServer: {
+    static: {
+      directory: __dirname,
+    },
+    hot: false,
+    compress: true,
+    port: 8080,
+  },
 };

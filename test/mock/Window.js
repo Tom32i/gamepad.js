@@ -17,4 +17,4 @@ module.exports = class Window {
         this.animationFrame.reset();
         this.events.length = 0;
     }
-}
+};

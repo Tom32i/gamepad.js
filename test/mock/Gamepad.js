@@ -13,7 +13,7 @@ module.exports = class Gamepad {
     get connected() {
         return this.index !== undefined;
     }
-}
+};
 
 class GamepadButton {
     constructor() {

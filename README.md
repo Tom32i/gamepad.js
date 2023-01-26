@@ -147,3 +147,20 @@ listener.on('gamepad:0:button:5',  function (event) {
      */
 });
 ```
+## Development
+
+### Launch the dev server
+
+    make start
+
+Go to http://localhost:8080
+
+### Code quality
+
+Linting:
+
+    make lint
+
+Run tests:
+
+    make test
