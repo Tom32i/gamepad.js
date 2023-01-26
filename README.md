@@ -18,13 +18,13 @@ HTML:
 <script>const { GamepadListener } = gamepad;</script>
 ```
 
-ES6:
+ES modules:
 
 ```javascript
 import { GamepadListener } from 'gamepad.js';
 ```
 
-Node:
+CommonJs modules:
 
 ```javascript
 const { GamepadListener } = require('gamepad.js');
@@ -147,7 +147,15 @@ listener.on('gamepad:0:button:5',  function (event) {
      */
 });
 ```
-## Development
+## Contributing
+
+Clone the repository:
+
+    git clone git@github.com:Tom32i/gamepad.js.git
+
+Install dev dependencies:
+
+    npm install
 
 ### Launch the dev server
 
