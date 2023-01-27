@@ -57,21 +57,15 @@ describe('GamepadListener', function () {
 
             nextFrame();
 
-            assert.equal(onConnected.calledOnce, true);
+            assert.equal(onConnected.called, true);
 
             const { detail: onConnectedDetail } = onConnected.lastCall.args[0];
 
             assert.equal(onConnectedDetail.index, 0);
             assert.equal(onConnectedDetail.gamepad, gamepadA);
 
-            assert.equal(onButton.called, true);
-
-            const { detail: onButtonDetail } = onButton.firstCall.args[0];
-
-            assert.equal(onButtonDetail.index, 0);
-            assert.equal(onButtonDetail.button, 0);
-            assert.equal(onButtonDetail.value, 0);
-            assert.equal(onButtonDetail.pressed, false);
+            assert.equal(onButton.called, false);
+            assert.equal(onAxis.called, false);
         });
 
         it('Button 4 pressed', function () {
@@ -152,6 +146,8 @@ describe('GamepadListener', function () {
 
             nextFrame();
 
+            assert.equal(onConnected.called, true);
+
             const { detail } = onConnected.lastCall.args[0];
 
             assert.equal(detail.index, 1);
@@ -186,7 +182,6 @@ describe('GamepadListener', function () {
             precision: 2,
             deadZone: 0.1,
             analog: true,
-            initToZero: true,
         });
 
         before(function () {

@@ -50,7 +50,7 @@ export default class GamepadListener extends EventEmitter {
 
     discover(gamepad, index) {
         if (gamepad) {
-            if (!this.handlers[index]) {
+            if (this.handlers[index] === null) {
                 this.registerHandler(index, gamepad);
             }
 
@@ -69,10 +69,6 @@ export default class GamepadListener extends EventEmitter {
      * @param {Gamepad} gamepad
      */
     registerHandler(index, gamepad) {
-        if (this.handlers[index]) {
-            throw new Error(`Gamepad #${index} is already registered.`);
-        }
-
         const handler = new GamepadHandler(index, gamepad, this.options);
 
         this.handlers[index] = handler;
@@ -90,12 +86,11 @@ export default class GamepadListener extends EventEmitter {
      * @param {Number} index
      */
     removeGamepad(index) {
-        if (!this.handlers[index]) {
-            throw new Error(`Gamepad #${index} is not registered.`);
-        }
+        const handler = this.handlers[index];
 
-        this.handlers[index].removeEventListener('axis', this.onAxis);
-        this.handlers[index].removeEventListener('button', this.onButton);
+        handler.removeEventListener('axis', this.onAxis);
+        handler.removeEventListener('button', this.onButton);
+
         this.handlers[index] = null;
 
         this.emit('gamepad:disconnected', { index });

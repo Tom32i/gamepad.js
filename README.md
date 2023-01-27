@@ -44,7 +44,6 @@ listener.start();
 | __analog__ | boolean | `true` | Set to `false` to get fixed value: e.g for a axis [-1, 0, 1]. Used to reduce the number of change event triggered if you dont need analog values. |
 | __precision__ | integer | `0` | When in analog mode, set the number of decimals. Used to reduce the muber of event triggered but keep analog values. |
 | __deadZone__ | float | `0` | Percent of noise to ignore around 0. Ex: deadZone set to 0.3 will cause axis position of from -0.3 to 0.3 to be considered 0. Axes moves below 30% from default positon won't trigger a change. |
-| __initToZero__ | bool | `false` | Set to true to initialize gamepads buttons and axis values to zero. Prevent a first event to be triggered for every button and axis on gamepad connection. |
 
 Theses options can be set for the whole gamepad:
 

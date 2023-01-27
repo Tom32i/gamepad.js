@@ -14,17 +14,14 @@ module.exports = class Navigator {
 
     connect(gamepad) {
         const { length } = this.gamepads;
-        let index = 0;
 
-        while (index < length) {
+        for (let index = 0; index < length; index++) {
             if (this.gamepads[index] === undefined) {
                 gamepad.index = index;
                 this.gamepads[index] = gamepad;
 
                 return;
             }
-
-            index++;
         }
 
         throw new Error('Maximum number of gamepads reached.');
