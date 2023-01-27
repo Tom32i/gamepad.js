@@ -13,12 +13,14 @@ export default class GamepadHandler extends EventEmitter
         .setDefaults({
             analog: true,
             deadZone: 0,
-            precision: 0
+            precision: 0,
+            initToZero: false,
         })
         .setTypes({
+            initToZero: 'boolean',
             analog: 'boolean',
             deadZone: 'number',
-            precision: 'number'
+            precision: 'number',
         })
         .setValidators({
             deadZone: value => Math.max(Math.min(value, 1), 0),
@@ -30,9 +32,12 @@ export default class GamepadHandler extends EventEmitter
 
         this.index = index;
         this.options = this.constructor.resolveOptions(config);
-        this.axes = new Array(gamepad.axes.length).fill(null);
-        this.buttons = new Array(gamepad.buttons.length).fill(null);
-
+        this.axes = new Array(gamepad.axes.length).fill(
+            this.constructor.getDefaultValue(this.options.axis)
+        );
+        this.buttons = new Array(gamepad.buttons.length).fill(
+            this.constructor.getDefaultValue(this.options.button)
+        );
         this.updateAxis = this.updateAxis.bind(this);
         this.updateButton = this.updateButton.bind(this);
     }
@@ -48,9 +53,19 @@ export default class GamepadHandler extends EventEmitter
         const { axis, button } = config;
 
         return  {
-            axis: this.optionResolver.resolve(axis ?? button ?? {}),
-            button: this.optionResolver.resolve(button ?? axis ?? {}),
+            axis: this.optionResolver.resolve(axis ?? button ?? config ?? {}),
+            button: this.optionResolver.resolve(button ?? axis ?? config ?? {}),
         };
+    }
+
+    static getDefaultValue(config) {
+        const { analog, initToZero } = config;
+
+        if (initToZero === false) {
+            return null;
+        }
+
+        return analog ? 0.0 : 0;
     }
 
     /**
