@@ -34,6 +34,9 @@ const { GamepadListener } = require('gamepad.js');
 
 ```javascript
 const listener = new GamepadListener(/* options*/);
+
+listener.on('gamepad:button', onButtonChange);
+
 listener.start();
 ```
 
@@ -70,88 +73,76 @@ const listener = new GamepadListener({
 
 ### Events:
 
-* `gamepad:connected`: When a new gamepad is connected.
-* `gamepad:disconnected`: When a gamepad is disconnected.
-* `gamepad:axis`: When a gamepad axis changes.
-* `gamepad:{gamepad}:axis`: When a specific gamepad axis changes, '{gamepad}' being the numeric index.
-* `gamepad:{gamepad}:axis:{axis}`: When a specific axis on a specific gamepad changes, '{axis}' being the numeric index of the axis.
-* `gamepad:button`: When a gamepad button changes.
-* `gamepad:{gamepad}:button`: When a specific gamepad button changes, '{gamepad}' being the numeric index.
-* `gamepad:{gamepad}:button:{button}`: When a specific button on a specific gamepad changes, '{button}' being the numeric index of the button.
+To listen for events use the `listener.addEventListener(eventName, callback);` method (also available under alias `listener.on(...)`).
 
-__Listen for value change on gampads:__
+To stop listening for events use the `listener.removeEventListener(eventName, callback);` method (also available under alias `listener.off(...)`).
+
+#### gamepad:connected
+
+A new gamepad is connected.
 
 ```javascript
-
 listener.on('gamepad:connected', event => {
-  const { detail } = event;
-  /**
-   * detail: {
-   *   index: 0, // Gamepad index [0-3]
-   *   gamepad, // Native Gamepad object
-   * }
-   */
-});
-
-listener.on('gamepad:disconnected', event => {
-  const { detail } = event;
-  /**
-   * detail: {
-   *   index: 0, // Gamepad index [0-3]
-   *   // Native Gamepad object is no longer available
-   * }
-   */
-});
-
-listener.on('gamepad:axis', event => {
-  const { detail } = event;
-  /**
-   * detail: {
-   *   index: 0, // Gamepad index [0-3]
-   *   axis: 3, // Axis index [0-N]
-   *   value: -0.34, // Value (float if analog, otherise integer)
-   *   gamepad, // Native Gamepad object
-   * }
-   */
-});
-
-listener.on('gamepad:0:button', event => {
-  const { detail } = event;
-  /**
-   * detail: {
-   *   index: 2, // Gamepad index [0-3]
-   *   button: 4, // Button index [0-N]
-   *   value: 0.56, // Value (float if analog, otherise integer)
-   *   pressed: true, // Boolean
-   *   gamepad, // Native Gamepad object
-   * }
-   */
-});
-
-listener.on('gamepad:0:button:5', event => {
-  const { detail } = event;
-  /**
-   * detail: {
-   *   index: 3, // Gamepad index [0-3]
-   *   button: 8, // Button index [0-N]
-   *   value: 1, // Value (float if analog, otherise integer)
-   *   pressed: true, // Boolean
-   *   gamepad, // Native Gamepad object
-   * }
-   */
+    const {
+        index, // Gamepad index: Number [0-3].
+        gamepad, // Native Gamepad object.
+    } = event.detail;
 });
 ```
 
-To stop listening for an event, use method `off`:
+#### gamepad:disconnected
+
+A gamepad was disconnected.
 
 ```javascript
-const myListener = event => { /* ... */ };
-listener.on('gamepad:connected', myListener);
-// ...
-listener.off('gamepad:connected', myListener);
+listener.on('gamepad:disconnected', event => {
+    const {
+        index, // Gamepad index: Number [0-3].
+        // Native Gamepad object is no longer available.
+    } = event.detail;
+});
 ```
 
-To stop the listener:
+#### gamepad:axis
+
+A gamepad axis value has changed.
+
+```javascript
+listener.on('gamepad:axis', event => {
+    const {
+        index,// Gamepad index: Number [0-3].
+        axis, // Axis index: Number [0-N].
+        value, // Current value: Number between -1 and 1. Float in analog mode, integer otherwise.
+        gamepad, // Native Gamepad object
+    } = event.detail;
+});
+```
+
+Optional: Can be listened for a specific Gamepad index: `gamepad:{gamepad}:axis`.
+Optional: Can be listened for a specific Gamepad index and a specific axis: `gamepad:{gamepad}:axis:{axis}`.
+
+#### gamepad:button
+
+A gamepad button value has changed.
+
+```javascript
+listener.on('gamepad:button', event => {
+    const {
+        index,// Gamepad index: Number [0-3].
+        button, // Button index: Number [0-N].
+        value, // Current value: Number between 0 and 1. Float in analog mode, integer otherwise.
+        pressed, // Native GamepadButton pressed value: Boolean.
+        gamepad, // Native Gamepad object
+    } = event.detail;
+});
+```
+
+Optional: Can be listened for a specific Gamepad index: `gamepad:{gamepad}:button`.
+Optional: Can be listened for a specific Gamepad index and a specific axis: `gamepad:{gamepad}:button:{button}`.
+
+### Stop listening
+
+When you don't need to listen for events anymore:
 
 ```javascript
 listener.stop();
