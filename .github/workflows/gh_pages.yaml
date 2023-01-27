@@ -1,0 +1,40 @@
+name: Deploy GH Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    name: '🚧 Build & deploy 🚀'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+
+      - name: 'Setup node'
+        uses: actions/setup-node@v3
+
+      - name: 'Cache NPM dependencies'
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-${{ hashFiles('package-lock.json') }}
+
+      - name: 'Install dependencies'
+        run: npm install --silent --no-progress
+
+      - name: '🚧 Build'
+        run: npm run build
+
+      - name: '🚀 Deploy'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: '.' # The folder the action should deploy.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages # The branch the action should deploy to.
+          commit-message: "[AUTO] Github pages update for ${{ github.sha }}"
+          clean: true # Automatically remove deleted files from the deploy branch
