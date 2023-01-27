@@ -14,7 +14,7 @@ export default class GamepadHandler extends EventEmitter
             analog: true,
             deadZone: 0,
             precision: 0,
-            initToZero: false,
+            initToZero: true,
         })
         .setTypes({
             initToZero: 'boolean',
