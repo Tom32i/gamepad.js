@@ -108,7 +108,10 @@
                     container.innerText = message.toString() + '\n' + container.innerText;
                 }
 
-                const listener = new GamepadListener();
+                const listener = new GamepadListener({
+                    deadZone: 0.05,
+                    precision: 3,
+                });
 
                 listener.on('gamepad:connected', event => {
                     const { index, gamepad } = event.detail;

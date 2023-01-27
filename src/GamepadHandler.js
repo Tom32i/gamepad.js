@@ -13,12 +13,12 @@ export default class GamepadHandler extends EventEmitter
         .setDefaults({
             analog: true,
             deadZone: 0,
-            precision: 0
+            precision: 0,
         })
         .setTypes({
             analog: 'boolean',
             deadZone: 'number',
-            precision: 'number'
+            precision: 'number',
         })
         .setValidators({
             deadZone: value => Math.max(Math.min(value, 1), 0),
@@ -29,12 +29,13 @@ export default class GamepadHandler extends EventEmitter
         super();
 
         this.index = index;
+        this.gamepad = gamepad;
         this.options = this.constructor.resolveOptions(config);
         this.axes = new Array(gamepad.axes.length).fill(null);
         this.buttons = new Array(gamepad.buttons.length).fill(null);
 
-        this.updateAxis = this.updateAxis.bind(this);
-        this.updateButton = this.updateButton.bind(this);
+        this.initAxes();
+        this.initButtons();
     }
 
     /**
@@ -48,82 +49,117 @@ export default class GamepadHandler extends EventEmitter
         const { axis, button } = config;
 
         return  {
-            axis: this.optionResolver.resolve(axis ?? button ?? {}),
-            button: this.optionResolver.resolve(button ?? axis ?? {}),
+            axis: this.optionResolver.resolve(axis ?? button ?? config ?? {}),
+            button: this.optionResolver.resolve(button ?? axis ?? config ?? {}),
         };
     }
 
-    /**
-     * Update
-     */
-    update(gamepad) {
-        this.updateAxes(gamepad);
-        this.updateButtons(gamepad);
-    }
-
-    updateAxes(gamepad) {
+    initAxes() {
         const { length } = this.axes;
 
         for (let index = 0; index < length; index++) {
-            this.updateAxis(gamepad, gamepad.axes[index], index);
+            this.axes[index] = this.resolveAxisValue(index);
         }
     }
 
-    updateButtons(gamepad) {
+    initButtons() {
         const { length } = this.buttons;
 
         for (let index = 0; index < length; index++) {
-            this.updateButton(gamepad, gamepad.buttons[index], index);
+            this.buttons[index] = this.resolveButtonValue(index);
         }
     }
 
-    /**
-     * @param {Gamepad} gamepad
-     * @param {Float} value
-     * @param {Number} index
-     */
-    updateAxis(gamepad, value, index) {
-        const { deadZone, analog, precision } = this.options.axis;
+    update(gamepad) {
+        this.gamepad = gamepad;
+        this.updateAxis();
+        this.updateButtons();
+    }
 
-        if (deadZone && value < deadZone && value > -deadZone) {
-            value = 0;
+    updateAxis() {
+        const { length } = this.axes;
+
+        for (let index = 0; index < length; index++) {
+            this.setAxisValue(index, this.resolveAxisValue(index));
         }
+    }
 
-        if (!analog) {
-            value = value > 0 ? 1 : value < 0 ? -1 : 0;
-        } else if (precision) {
-            value = Math.round(value * precision) / precision;
+    updateButtons() {
+        const { length } = this.buttons;
+
+        for (let index = 0; index < length; index++) {
+            this.setButtonValue(index, this.resolveButtonValue(index));
         }
+    }
 
+    setAxisValue(index, value) {
         if (this.axes[index] !== value) {
             this.axes[index] = value;
-            this.emit('axis', { gamepad, axis: index, value, index: this.index });
+            this.emit('axis', {
+                gamepad: this.gamepad,
+                index: this.index,
+                axis: index,
+                value,
+            });
+        }
+    }
+
+    setButtonValue(index, value) {
+        if (this.buttons[index] !== value) {
+            this.buttons[index] = value;
+            this.emit('button', {
+                gamepad: this.gamepad,
+                index: this.index,
+                button: index,
+                pressed: this.gamepad.buttons[index].pressed,
+                value,
+            });
         }
     }
 
     /**
-     * @param {Gamepad} gamepad
-     * @param {GamepadButton} button
      * @param {Number} index
      */
-    updateButton(gamepad, button, index) {
-        const { deadZone, analog, precision } = this.options.button;
-        const { value: currentValue, pressed } = button;
-        let value = currentValue;
+    resolveAxisValue(index) {
+        const { deadZone, analog, precision } = this.options.axis;
+        const value = this.gamepad.axes[index];
 
-        if (deadZone && button.value < deadZone && button.value > -deadZone) {
-            value = 0;
+        if (deadZone && value < deadZone && value > -deadZone) {
+            return 0;
         }
 
         if (!analog) {
-            value = pressed ? 1 : 0;
-        } else if (precision) {
-            value = Math.round(value * precision) / precision;
+            return value > 0 ? 1 : value < 0 ? -1 : 0;
         }
 
-        if (this.buttons[index] !== value) {
-            this.buttons[index] = value;
-            this.emit('button', { gamepad, button: index, pressed, value, index: this.index });
+        if (precision) {
+            return Math.round(value * precision) / precision;
         }
+
+        return value;
+    }
+
+    /**
+     * @param {Number} index
+     *
+     * @return {Number}
+     */
+    resolveButtonValue(index) {
+        const { deadZone, analog, precision } = this.options.button;
+        const { value } = this.gamepad.buttons[index];
+
+        if (deadZone > 0 && value < deadZone && value > -deadZone) {
+            return 0;
+        }
+
+        if (!analog) {
+            return value === 0 ? 0 : 1;
+        }
+
+        if (precision) {
+            return Math.round(value * precision) / precision;
+        }
+
+        return value;
     }
 }

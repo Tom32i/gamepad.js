@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 const { connect, disconnect, nextFrame, Gamepad, reset } = require('./mock');
-const { GamepadListener } = require('../gamepad');
+const { GamepadListener, GamepadHandler } = require('../gamepad');
 
 describe('GamepadListener', function () {
     describe('Multiple gamepads', function () {
@@ -57,21 +57,15 @@ describe('GamepadListener', function () {
 
             nextFrame();
 
-            assert.equal(onConnected.calledOnce, true);
+            assert.equal(onConnected.called, true);
 
-            const { detail } = onConnected.lastCall.args[0];
+            const { detail: onConnectedDetail } = onConnected.lastCall.args[0];
 
-            assert.equal(detail.index, 0);
-            assert.equal(detail.gamepad, gamepadA);
+            assert.equal(onConnectedDetail.index, 0);
+            assert.equal(onConnectedDetail.gamepad, gamepadA);
 
-            assert.equal(onButton.called, true);
-
-            const onButtonDetail = onButton.firstCall.args[0].detail;
-
-            assert.equal(onButtonDetail.index, 0);
-            assert.equal(onButtonDetail.button, 0);
-            assert.equal(onButtonDetail.value, 0);
-            assert.equal(onButtonDetail.pressed, false);
+            assert.equal(onButton.called, false);
+            assert.equal(onAxis.called, false);
         });
 
         it('Button 4 pressed', function () {
@@ -82,14 +76,14 @@ describe('GamepadListener', function () {
             assert.equal(onButton.called, true);
             assert.equal(onButtonFour.called, true);
 
-            const onButtonDetail = onButton.lastCall.args[0].detail;
+            const { detail: onButtonDetail } = onButton.lastCall.args[0];
 
             assert.equal(onButtonDetail.index, 0);
             assert.equal(onButtonDetail.button, 4);
             assert.equal(onButtonDetail.value, 1);
             assert.equal(onButtonDetail.pressed, true);
 
-            const onButtonFourDetail = onButtonFour.lastCall.args[0].detail;
+            const { detail: onButtonFourDetail } = onButtonFour.lastCall.args[0];
 
             assert.equal(onButtonFourDetail.index, 0);
             assert.equal(onButtonFourDetail.button, 4);
@@ -104,14 +98,14 @@ describe('GamepadListener', function () {
 
             assert.equal(onButton.called, true);
 
-            const onButtonDetail = onButton.lastCall.args[0].detail;
+            const { detail: onButtonDetail } = onButton.lastCall.args[0];
 
             assert.equal(onButtonDetail.index, 0);
             assert.equal(onButtonDetail.button, 4);
             assert.equal(onButtonDetail.value, 0);
             assert.equal(onButtonDetail.pressed, false);
 
-            const onButtonFourDetail = onButtonFour.lastCall.args[0].detail;
+            const { detail: onButtonFourDetail } = onButtonFour.lastCall.args[0];
 
             assert.equal(onButtonFourDetail.index, 0);
             assert.equal(onButtonFourDetail.button, 4);
@@ -126,11 +120,11 @@ describe('GamepadListener', function () {
 
             assert.equal(onAxis.called, true);
 
-            const onAxisDetail = onAxis.lastCall.args[0].detail;
+            const { detail } = onAxis.lastCall.args[0];
 
-            assert.equal(onAxisDetail.index, 0);
-            assert.equal(onAxisDetail.axis, 1);
-            assert.equal(onAxisDetail.value, -0.1);
+            assert.equal(detail.index, 0);
+            assert.equal(detail.axis, 1);
+            assert.equal(detail.value, -0.1);
         });
 
         it('Axis 3 move', function () {
@@ -140,17 +134,19 @@ describe('GamepadListener', function () {
 
             assert.equal(onAxis.called, true);
 
-            const onAxisDetail = onAxis.lastCall.args[0].detail;
+            const { detail } = onAxis.lastCall.args[0];
 
-            assert.equal(onAxisDetail.index, 0);
-            assert.equal(onAxisDetail.axis, 3);
-            assert.equal(onAxisDetail.value, 0.3);
+            assert.equal(detail.index, 0);
+            assert.equal(detail.axis, 3);
+            assert.equal(detail.value, 0.3);
         });
 
         it('Gamepad B connected', function () {
             connect(gamepadB);
 
             nextFrame();
+
+            assert.equal(onConnected.called, true);
 
             const { detail } = onConnected.lastCall.args[0];
 
@@ -173,7 +169,7 @@ describe('GamepadListener', function () {
 
     describe('GamepadListener options', function () {
         // Mocking native browser feature
-        const gamepad = new Gamepad(0, 4, 'Gamepad solo');
+        const gamepad = new Gamepad(1, 1, 'Gamepad solo');
 
         // Spies
         const onConnected = sinon.spy();
@@ -184,7 +180,7 @@ describe('GamepadListener', function () {
         // Gamepad listener
         const listener = new GamepadListener({
             precision: 2,
-            deadZone: 0.2,
+            deadZone: 0.1,
             analog: true,
         });
 
@@ -227,12 +223,34 @@ describe('GamepadListener', function () {
 
             assert.equal(onButton.called, true);
 
-            const onButtonDetail = onButton.lastCall.args[0].detail;
+            const { detail } = onButton.lastCall.args[0];
 
-            assert.equal(onButtonDetail.index, 0);
-            assert.equal(onButtonDetail.button, 0);
-            assert.equal(onButtonDetail.value, 1);
-            assert.equal(onButtonDetail.pressed, true);
+            assert.equal(detail.index, 0);
+            assert.equal(detail.button, 0);
+            assert.equal(detail.value, 1);
+            assert.equal(detail.pressed, true);
+        });
+
+        it('Axis 0 under dead zone', function () {
+            gamepad.axes[0] = 0.001;
+
+            nextFrame();
+
+            assert.equal(onAxis.called, false);
+        });
+
+        it('Axis 0 over dead zone', function () {
+            gamepad.axes[0] = -0.34567;
+
+            nextFrame();
+
+            assert.equal(onAxis.called, true);
+
+            const { detail } = onAxis.lastCall.args[0];
+
+            assert.equal(detail.index, 0);
+            assert.equal(detail.axis, 0);
+            assert.equal(detail.value, -0.35);
         });
     });
 });
