@@ -1,6 +1,6 @@
 const meta = require('./package.json');
 
-module.exports = {
+module.exports = (env, argv) => ({
   target: 'web',
   entry: './src/index.js',
   output: {
@@ -10,6 +10,7 @@ module.exports = {
     libraryTarget: 'umd',
     globalObject: 'this',
   },
+  devtool: argv.mode === 'production' ? false : 'source-map',
   module: {
     rules: [
       {
@@ -35,4 +36,4 @@ module.exports = {
     compress: true,
     port: 8080,
   },
-};
+});

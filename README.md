@@ -1,7 +1,7 @@
 gamepad.js
 ================
 
-A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad sticks and button.
+A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad axes and button.
 
 Try it right now in your browser: [http://tom32i.github.io/gamepad.js/](http://tom32i.github.io/gamepad.js/)
 
@@ -40,15 +40,15 @@ listener.start();
 ### Configuration:
 
 __analog:__ (boolean: default true)
-Set to false to get fixed value: ex for a stick 0/1/-1. Used to reduce the number of change event triggered if you dont need analog values.
+Set to false to get fixed value: ex for a axis 0/1/-1. Used to reduce the number of change event triggered if you dont need analog values.
 
 __precision:__ (integer: default 0 (no rounding))
 When in analog mode, set the number of number you want after decimal. Used to reduce the muber of event triggered but keep analog values.
 
 __deadZone:__ (float: from 0 to 1)
 Percent of noise to ignore around 0.
-Ex: deadZone set to 0.3 will cause stick position of from -0.3 to 0.3 to be considered 0.
-Stick moves below 30% from default positon won't trigger a change.
+Ex: deadZone set to 0.3 will cause axis position of from -0.3 to 0.3 to be considered 0.
+Axes moves below 30% from default positon won't trigger a change.
 
 Theses options can be set for the whole gamepad:
 
@@ -59,14 +59,14 @@ const listener = new GamepadListener({
 });
 ```
 
-Or distinctly for sticks and buttons:
+Or distinctly for axes and buttons:
 
 ```javascript
 const listener = new GamepadListener({
     button: {
         analog: false
     },
-    stick: {
+    axis: {
         precision: 2,
         deadZone: 0.5
     }
@@ -75,14 +75,14 @@ const listener = new GamepadListener({
 
 ### Events:
 
-* `gamepad:connected: When a new gamepad is connected.
-* `gamepad:disconnected: When a gamepad is disconnected.
-* `gamepad:axis: When a gamepad axis changes.
-* `gamepad:{gamepad}:axis: When a specific gamepad axis changes, '{gamepad}' being the numeric index.
-* `gamepad:{gamepad}:axis:{axis}: When a specific axis on a specific gamepad changes, '{axis}' being the numeric index of the axis.
-* `gamepad:button: When a gamepad button changes.
-* `gamepad:{gamepad}:button: When a specific gamepad button changes, '{gamepad}' being the numeric index.
-* `gamepad:{gamepad}:button:{button}: When a specific button on a specific gamepad changes, '{button}' being the numeric index of the button.
+* `gamepad:connected`: When a new gamepad is connected.
+* `gamepad:disconnected`: When a gamepad is disconnected.
+* `gamepad:axis`: When a gamepad axis changes.
+* `gamepad:{gamepad}:axis`: When a specific gamepad axis changes, '{gamepad}' being the numeric index.
+* `gamepad:{gamepad}:axis:{axis}`: When a specific axis on a specific gamepad changes, '{axis}' being the numeric index of the axis.
+* `gamepad:button`: When a gamepad button changes.
+* `gamepad:{gamepad}:button`: When a specific gamepad button changes, '{gamepad}' being the numeric index.
+* `gamepad:{gamepad}:button:{button}`: When a specific button on a specific gamepad changes, '{button}' being the numeric index of the button.
 
 __Listen for value change on gampads:__
 
@@ -113,8 +113,7 @@ listener.on('gamepad:axis', function (event) {
      * event:
      *   detail: {
      *       index: 0, // Gamepad index [0-3]
-     *       stick: 0, // Stick index [0-N]
-     *       axis: 1, // Axis index [0-1]
+     *       axis: 3, // Axis index [0-N]
      *       value: -0.34, // Value (float if analog, otherise integer)
      *       gamepad, // Native Gamepad object
      *   }

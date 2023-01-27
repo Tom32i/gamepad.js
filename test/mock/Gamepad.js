@@ -1,8 +1,7 @@
 module.exports = class Gamepad {
-    constructor(sticks = 2, buttons = 10, id = 'Mocked Gamepad') {
-        this.axes = new Array(sticks * 2).fill(0.0);
+    constructor(axes = 4, buttons = 10, id = 'Mocked Gamepad') {
+        this.axes = new Array(axes).fill(0.0);
         this.buttons = new Array(buttons).fill(null).map(() => new GamepadButton());
-        this.sticks = new Array(sticks).fill(null).map((value, index) => new GamepadStick(this, index));
         this.displayId = id;
         this.id = id;
         this.index = undefined;
@@ -30,21 +29,5 @@ class GamepadButton {
 
     release() {
         this.press(0);
-    }
-}
-
-
-class GamepadStick {
-    constructor(gamepad, index) {
-        this.gamepad = gamepad;
-        this.index = index;
-    }
-
-    setX(value) {
-        this.gamepad.axes[this.index * 2] = value;
-    }
-
-    setY(value) {
-        this.gamepad.axes[this.index * 2 + 1] = value;
     }
 }

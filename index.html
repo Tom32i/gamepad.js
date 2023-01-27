@@ -133,9 +133,9 @@
                 });
 
                 listener.on('gamepad:axis', event => {
-                    const { index, stick, axis, value } = event.detail;
+                    const { index, axis, value } = event.detail;
 
-                    output(index, `Sitck [${stick}], axis [${axis}]: ${value}`, event.detail);
+                    output(index, `Axis [${axis}]: ${value}`, event.detail);
                 });
 
                 listener.on('gamepad:button', event => {
