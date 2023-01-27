@@ -119,6 +119,7 @@ listener.on('gamepad:axis', event => {
 ```
 
 Optional: Can be listened for a specific Gamepad index: `gamepad:{gamepad}:axis`.
+
 Optional: Can be listened for a specific Gamepad index and a specific axis: `gamepad:{gamepad}:axis:{axis}`.
 
 #### gamepad:button
@@ -138,6 +139,7 @@ listener.on('gamepad:button', event => {
 ```
 
 Optional: Can be listened for a specific Gamepad index: `gamepad:{gamepad}:button`.
+
 Optional: Can be listened for a specific Gamepad index and a specific axis: `gamepad:{gamepad}:button:{button}`.
 
 ### Stop listening
