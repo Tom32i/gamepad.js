@@ -6,10 +6,10 @@ const { GamepadListener } = require('../gamepad');
 describe('GamepadListener', function () {
     describe('Multiple gamepads', function () {
         // Mocking native browser feature
-        const gamepadA = new Gamepad(2, 10, 'Gamepad A');
-        const gamepadB = new Gamepad(2, 10, 'Gamepad B');
-        const gamepadC = new Gamepad(2, 10, 'Gamepad C');
-        const gamepadD = new Gamepad(2, 10, 'Gamepad D');
+        const gamepadA = new Gamepad(4, 10, 'Gamepad A');
+        const gamepadB = new Gamepad(4, 10, 'Gamepad B');
+        const gamepadC = new Gamepad(4, 10, 'Gamepad C');
+        const gamepadD = new Gamepad(4, 10, 'Gamepad D');
 
         // Spies
         const onConnected = sinon.spy();
@@ -119,8 +119,8 @@ describe('GamepadListener', function () {
             assert.equal(onButtonFourDetail.pressed, false);
         });
 
-        it('Stick 0 move Y', function () {
-            gamepadA.sticks[0].setY(-0.1);
+        it('Axis 1 move', function () {
+            gamepadA.axes[1] = -0.1;
 
             nextFrame();
 
@@ -129,13 +129,12 @@ describe('GamepadListener', function () {
             const onAxisDetail = onAxis.lastCall.args[0].detail;
 
             assert.equal(onAxisDetail.index, 0);
-            assert.equal(onAxisDetail.stick, 0);
             assert.equal(onAxisDetail.axis, 1);
             assert.equal(onAxisDetail.value, -0.1);
         });
 
-        it('Stick 1 move X', function () {
-            gamepadA.sticks[1].setX(0.3);
+        it('Axis 3 move', function () {
+            gamepadA.axes[3] = 0.3;
 
             nextFrame();
 
@@ -144,8 +143,7 @@ describe('GamepadListener', function () {
             const onAxisDetail = onAxis.lastCall.args[0].detail;
 
             assert.equal(onAxisDetail.index, 0);
-            assert.equal(onAxisDetail.stick, 1);
-            assert.equal(onAxisDetail.axis, 0);
+            assert.equal(onAxisDetail.axis, 3);
             assert.equal(onAxisDetail.value, 0.3);
         });
 

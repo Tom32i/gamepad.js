@@ -1,7 +1,7 @@
 {
   "name": "gamepad.js",
-  "version": "1.0.3",
-  "description": "A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad sticks and button",
+  "version": "2.0.0",
+  "description": "A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad axes and button",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
   "homepage": "https://github.com/Tom32i/gamepad.js",
@@ -18,24 +18,25 @@
     "gamepad.js"
   ],
   "scripts": {
-    "watch": "webpack --watch --mode=development",
+    "start": "webpack serve --mode=development",
     "build": "webpack --mode=production",
     "test": "mocha",
     "lint": "eslint src/* --ext .js,.json --fix"
   },
   "main": "gamepad.js",
   "dependencies": {
-    "option-resolver.js": "^0.1.1",
-    "tom32i-event-emitter.js": "^2.0.4"
+    "option-resolver.js": "^1.1.0",
+    "tom32i-event-emitter.js": "^2.0.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.4",
-    "@babel/preset-env": "^7.11.0",
-    "babel-loader": "^8.1.0",
-    "eslint": "^5.16.0",
-    "mocha": "^8.0.1",
-    "sinon": "^9.0.3",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "@babel/core": "^7.14",
+    "@babel/preset-env": "^7.14",
+    "babel-loader": "^8.2",
+    "eslint": "^8.32",
+    "mocha": "^10.0",
+    "sinon": "^15.0",
+    "webpack": "^5.36",
+    "webpack-cli": "^4.6",
+    "webpack-dev-server": "^4.11"
   }
 }

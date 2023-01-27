@@ -6,16 +6,12 @@ install:
 	npm install
 
 # Launch watch
-watch:
-	npm run watch
+start:
+	npm run start
 
 # Build lib
 build:
 	npm run build
-
-# Launch demo client
-demo:
-	php -S 0.0.0.0:8032 -t .
 
 # Lint and code style fix
 lint:

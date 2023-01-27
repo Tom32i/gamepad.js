@@ -5,74 +5,85 @@ import OptionResolver from 'option-resolver.js';
  * Gamepad Handler
  *
  * @param {Gamepad} gamepad
- * @param {Object} options
+ * @param {Object} config
  */
-export default class GamepadHandler extends EventEmitter {
-    constructor(index, gamepad, options = {}) {
+export default class GamepadHandler extends EventEmitter
+{
+    static optionResolver = new OptionResolver()
+        .setDefaults({
+            analog: true,
+            deadZone: 0,
+            precision: 0
+        })
+        .setTypes({
+            analog: 'boolean',
+            deadZone: 'number',
+            precision: 'number'
+        })
+        .setValidators({
+            deadZone: value => Math.max(Math.min(value, 1), 0),
+            precision: value => value > 0 ? Math.pow(10, value) : 0,
+        });
+
+    constructor(index, gamepad, config = {}) {
         super();
 
         this.index = index;
-        this.options = this.constructor.resolveOptions(options);
-        this.sticks = new Array(gamepad.axes.length / 2).fill(null).map(() => [null, null]);
+        this.options = this.constructor.resolveOptions(config);
+        this.axes = new Array(gamepad.axes.length).fill(null);
         this.buttons = new Array(gamepad.buttons.length).fill(null);
 
-        this.updateStick = this.updateStick.bind(this);
+        this.updateAxis = this.updateAxis.bind(this);
         this.updateButton = this.updateButton.bind(this);
     }
 
     /**
      * Resolve options
      *
-     * @param {Object} sourceOptions
+     * @param {Object} config
      *
      * @return {Object}
      */
-    static resolveOptions(sourceOptions) {
-        const customStick = typeof sourceOptions.stick !== 'undefined';
-        const customButton = typeof sourceOptions.button !== 'undefined';
+    static resolveOptions(config) {
+        const { axis, button } = config;
 
-        const options = {
-            stick: this.optionResolver.resolve(customStick ? sourceOptions.stick : (customButton ? {} : sourceOptions)),
-            button: this.optionResolver.resolve(customButton ? sourceOptions.button : (customStick ? {} : sourceOptions))
+        return  {
+            axis: this.optionResolver.resolve(axis ?? button ?? {}),
+            button: this.optionResolver.resolve(button ?? axis ?? {}),
         };
-
-        options.stick.deadZone = Math.max(Math.min(options.stick.deadZone, 1), 0);
-        options.button.deadZone = Math.max(Math.min(options.button.deadZone, 1), 0);
-        options.stick.precision = options.stick.precision ? Math.pow(10, options.stick.precision) : 0;
-        options.button.precision = options.button.precision ? Math.pow(10, options.button.precision) : 0;
-
-        return options;
     }
 
     /**
      * Update
      */
     update(gamepad) {
-        let index = 0;
-        const sticks = this.sticks.length;
+        this.updateAxes(gamepad);
+        this.updateButtons(gamepad);
+    }
 
-        for (let stick = 0; stick < sticks; stick++) {
-            for (let axis = 0; axis < 2; axis++) {
-                this.updateStick(gamepad, stick, axis, gamepad.axes[index++]);
-            }
+    updateAxes(gamepad) {
+        const { length } = this.axes;
+
+        for (let index = 0; index < length; index++) {
+            this.updateAxis(gamepad, gamepad.axes[index], index);
         }
+    }
 
-        const buttons = this.buttons.length;
+    updateButtons(gamepad) {
+        const { length } = this.buttons;
 
-        for (index = 0; index < buttons; index++) {
+        for (let index = 0; index < length; index++) {
             this.updateButton(gamepad, gamepad.buttons[index], index);
         }
     }
 
     /**
-     * Set stick
-     *
-     * @param {Number} stick
-     * @param {Number} axis
-     * @param {Number} value
+     * @param {Gamepad} gamepad
+     * @param {Float} value
+     * @param {Number} index
      */
-    updateStick(gamepad, stick, axis, value) {
-        const { deadZone, analog, precision } = this.options.stick;
+    updateAxis(gamepad, value, index) {
+        const { deadZone, analog, precision } = this.options.axis;
 
         if (deadZone && value < deadZone && value > -deadZone) {
             value = 0;
@@ -84,15 +95,13 @@ export default class GamepadHandler extends EventEmitter {
             value = Math.round(value * precision) / precision;
         }
 
-        if (this.sticks[stick][axis] !== value) {
-            this.sticks[stick][axis] = value;
-            this.emit('axis', { gamepad, stick, axis, value, index: this.index });
+        if (this.axes[index] !== value) {
+            this.axes[index] = value;
+            this.emit('axis', { gamepad, axis: index, value, index: this.index });
         }
     }
 
     /**
-     * Set button
-     *
      * @param {Gamepad} gamepad
      * @param {GamepadButton} button
      * @param {Number} index
@@ -112,27 +121,9 @@ export default class GamepadHandler extends EventEmitter {
             value = Math.round(value * precision) / precision;
         }
 
-
         if (this.buttons[index] !== value) {
             this.buttons[index] = value;
             this.emit('button', { gamepad, button: index, pressed, value, index: this.index });
         }
     }
 }
-
-/**
- * Option resolver
- *
- * @type {OptionResolver}
- */
-GamepadHandler.optionResolver = new OptionResolver()
-    .setDefaults({
-        analog: true,
-        deadZone: 0,
-        precision: 0
-    })
-    .setTypes({
-        analog: 'boolean',
-        deadZone: 'number',
-        precision: 'number'
-    });

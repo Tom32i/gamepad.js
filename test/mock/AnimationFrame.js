@@ -35,4 +35,4 @@ module.exports = class AnimationFrame {
     reset() {
         this.nextFrame.length = 0;
     }
-}
+};
