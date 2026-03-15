@@ -1,12 +1,12 @@
-import EventEmitter from 'tom32i-event-emitter.js';
-import GamepadHandler from 'gamepad/GamepadHandler';
-import Loop from 'gamepad/Loop';
+import EventEmitter from 'tom32i-event-emitter.js/EventEmitter.js';
+import GamepadHandler from './GamepadHandler';
+import Loop from './Loop';
 
 /**
  * Gamepad Listener
  */
 export default class GamepadListener extends EventEmitter {
-    constructor(options = {}) {
+    constructor(options = {}, mappings = []) {
         super();
 
         if (typeof navigator.getGamepads !== 'function') {
@@ -14,6 +14,7 @@ export default class GamepadListener extends EventEmitter {
         }
 
         this.options = options;
+        this.mappings = mappings;
         this.onAxis = this.onAxis.bind(this);
 
         this.update = this.update.bind(this);
@@ -69,15 +70,22 @@ export default class GamepadListener extends EventEmitter {
      * @param {Gamepad} gamepad
      */
     registerHandler(index, gamepad) {
-        const handler = new GamepadHandler(index, gamepad, this.options);
+        const mapping = this.getMapping(gamepad);
+        const handler = new GamepadHandler(index, gamepad, this.options, mapping);
 
         this.handlers[index] = handler;
 
         handler.addEventListener('axis', this.onAxis);
         handler.addEventListener('button', this.onButton);
 
-        this.emit('gamepad:connected', { index, gamepad });
-        this.emit(`gamepad:${index}:connected`, { index, gamepad });
+        const event = { index, gamepad, mapping: mapping?.name || null };
+
+        this.emit('gamepad:connected', event);
+        this.emit(`gamepad:${index}:connected`, event);
+    }
+
+    getMapping(gamepad) {
+        return this.mappings.find(mapping => mapping?.match(gamepad)) || null;
     }
 
     /**

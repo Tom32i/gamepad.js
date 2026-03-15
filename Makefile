@@ -5,9 +5,13 @@
 install:
 	npm install
 
-# Launch watch
+# Launch dev server
 start:
 	npm run start
+
+# Launch watcher
+watch:
+	npm run watch
 
 # Build lib
 build:

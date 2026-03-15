@@ -14,6 +14,7 @@ export default class GamepadHandler extends EventEmitter
             analog: true,
             deadZone: 0,
             precision: 0,
+
         })
         .setTypes({
             analog: 'boolean',
@@ -25,11 +26,12 @@ export default class GamepadHandler extends EventEmitter
             precision: value => value > 0 ? Math.pow(10, value) : 0,
         });
 
-    constructor(index, gamepad, config = {}) {
+    constructor(index, gamepad, config = {}, mapping = null) {
         super();
 
         this.index = index;
         this.gamepad = gamepad;
+        this.mapping = mapping;
         this.options = this.constructor.resolveOptions(config);
         this.axes = new Array(gamepad.axes.length).fill(null);
         this.buttons = new Array(gamepad.buttons.length).fill(null);
@@ -99,6 +101,7 @@ export default class GamepadHandler extends EventEmitter
                 gamepad: this.gamepad,
                 index: this.index,
                 axis: index,
+                label: this.mapping?.getAxis(index) || `Axis ${index}`,
                 value,
             });
         }
@@ -112,6 +115,7 @@ export default class GamepadHandler extends EventEmitter
                 index: this.index,
                 button: index,
                 pressed: this.gamepad.buttons[index].pressed,
+                label: this.mapping?.getButton(index) || `Button ${index}`,
                 value,
             });
         }

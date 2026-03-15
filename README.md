@@ -14,8 +14,18 @@ Try it right now in your browser: [http://tom32i.github.io/gamepad.js/](http://t
 HTML:
 
 ```html
-<script src="gamepad.js"></script>
-<script>const { GamepadListener } = gamepad;</script>
+<script src="gamepad.umd.cjs"></script>
+<script>
+    const { GamepadListener } = gamepad;
+</script>
+```
+
+HTML module:
+
+```html
+<script type="module">
+    import { GamepadListener } from './gamepad.js';
+</script>
 ```
 
 ES modules:
@@ -33,7 +43,7 @@ const { GamepadListener } = require('gamepad.js');
 ## Usage:
 
 ```javascript
-const listener = new GamepadListener(/* options*/);
+const listener = new GamepadListener(/* options, mappings*/);
 
 listener.on('gamepad:button', onButtonChange);
 
@@ -149,6 +159,36 @@ When you don't need to listen for events anymore:
 ```javascript
 listener.stop();
 ```
+
+## Activate Mapping
+
+The GamepadListener can take an array of "Mappings" as a second argument.
+Mapping are responsible for detecting the type of controller that is connected and providing the correct labels for the button and axis.
+
+Ex: "X", "Y", "A", "B", "LB", "RB", "Start" ... for the classic Xbox 360 controller.
+
+You can add as many mapping as you want to support.
+Two are available out of the box:
+- the XBoxMapping for the Xbox 360 controller
+- the Zero2Mapping for the [8bitDo Zero 2](https://www.8bitdo.com/zero2/) controller.
+
+### Usage
+
+```js
+const { GamepadListener, XBoxMapping, Zero2Mapping } = gamepad;
+const listener = new GamepadListener({}, [XBoxMapping, Zero2Mapping]);
+
+listener.on('gamepad:button', event => {
+    const { button, label } = event.detail;
+    // button: 0
+    // label: "A"
+});
+```
+
+### Adding custom mapping
+
+You can write your own mapping by extending the [Mapping](src/tools/Mapping.js) class.
+_See [XboxMapping](src/tools/XboxMapping.js) for reference._
 
 ## Contributing
 

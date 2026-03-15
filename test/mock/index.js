@@ -1,24 +1,20 @@
-const Window = require('./Window');
-const Navigator = require('./Navigator');
-const Gamepad = require('./Gamepad');
+import { vi } from 'vitest';
+import Window  from './Window';
+import Navigator  from './Navigator';
+import Gamepad from './Gamepad';
 
-if (!global.window) {
-    global.window = new Window();
+const windowMock = new Window();
+const navigatorMock = new Navigator();
+
+// vi.stubGlobal('addEventListener', windowMock.addEventListener);
+vi.stubGlobal('window', windowMock);
+vi.stubGlobal('navigator', navigatorMock);
+
+export function reset() {
+    windowMock.reset();
+    navigatorMock.reset();
 }
 
-if (!global.navigator) {
-    global.navigator = new Navigator();
-}
-
-function reset() {
-    global.window.reset();
-    global.navigator.reset();
-}
-
-module.exports = {
-    Gamepad,
-    reset,
-    connect: global.navigator.connect,
-    disconnect: global.navigator.disconnect,
-    nextFrame: global.window.animationFrame.next,
-};
+export { Gamepad, Navigator, Window };
+export const nextFrame = windowMock.animationFrame.next;
+export const { connect, disconnect } = navigatorMock;

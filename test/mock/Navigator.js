@@ -1,4 +1,4 @@
-module.exports = class Navigator {
+export default class Navigator {
     constructor() {
         this.gamepads = [undefined, undefined, undefined, undefined];
 
@@ -19,7 +19,6 @@ module.exports = class Navigator {
             if (this.gamepads[index] === undefined) {
                 gamepad.index = index;
                 this.gamepads[index] = gamepad;
-
                 return;
             }
         }

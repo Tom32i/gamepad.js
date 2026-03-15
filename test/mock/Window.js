@@ -1,6 +1,6 @@
-const AnimationFrame = require('./AnimationFrame');
+import AnimationFrame from './AnimationFrame';
 
-module.exports = class Window {
+export default class Window {
     constructor() {
         this.animationFrame = new AnimationFrame();
         this.events = [];

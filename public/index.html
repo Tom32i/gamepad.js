@@ -2,6 +2,8 @@
 <html>
     <head>
         <title>Gamepad.js</title>
+
+        <script src="gamepad.umd.cjs"></script>
         <style type="text/css">
             body, html {
                 height: 100%;
@@ -96,10 +98,9 @@
                 <div class="output"></div>
             </div>
         </div>
-        <script src="gamepad.js"></script>
         <script>
             window.addEventListener('load', () => {
-                const { GamepadListener } = gamepad;
+                const { GamepadListener, XBoxMapping, Zero2Mapping } = gamepad;
                 const outputs = document.getElementsByClassName('output');
                 const titles = document.getElementsByTagName('h3');
 
@@ -111,10 +112,10 @@
                 const listener = new GamepadListener({
                     deadZone: 0.05,
                     precision: 3,
-                });
+                }, [XBoxMapping, Zero2Mapping]);
 
                 listener.on('gamepad:connected', event => {
-                    const { index, gamepad } = event.detail;
+                    const { index, gamepad, mapping } = event.detail;
                     const title = titles[index];
 
                     if (typeof title.defaultText === 'undefined') {
@@ -123,7 +124,7 @@
 
                     title.innerText = gamepad.id;
 
-                    output(index, `Connected: ${gamepad.id}`, event.detail);
+                    output(index, `Connected: ${gamepad.id} (${mapping})`, event.detail);
                 });
 
                 listener.on('gamepad:disconnected', event => {
@@ -136,15 +137,15 @@
                 });
 
                 listener.on('gamepad:axis', event => {
-                    const { index, axis, value } = event.detail;
+                    const { index, axis, value, label, gamepad } = event.detail;
 
-                    output(index, `Axis [${axis}]: ${value}`, event.detail);
+                    output(index, `Axis [${axis}] (${label}): ${value}`, event.detail);
                 });
 
                 listener.on('gamepad:button', event => {
-                    const { index, button, value, pressed } = event.detail;
+                    const { index, button, label, value, pressed, gamepad } = event.detail;
 
-                    output(index, "Button [" + button + "] " + (pressed ? 'pressed' : 'released') + ": " + value, event.detail);
+                    output(index, `Button [${button}] (${label}): ${value}`, event.detail);
                 });
 
                 listener.start();
