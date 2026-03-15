@@ -1,5 +1,5 @@
-import GamepadHandler from 'gamepad/GamepadHandler';
-import GamepadListener from 'gamepad/GamepadListener';
+import GamepadHandler from '@gamepad/GamepadHandler';
+import GamepadListener from '@gamepad/GamepadListener';
 
 export {
     GamepadHandler,

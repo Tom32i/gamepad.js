@@ -14,8 +14,18 @@ Try it right now in your browser: [http://tom32i.github.io/gamepad.js/](http://t
 HTML:
 
 ```html
-<script src="gamepad.js"></script>
-<script>const { GamepadListener } = gamepad;</script>
+<script src="gamepad.umd.cjs"></script>
+<script>
+    const { GamepadListener } = gamepage;
+</script>
+```
+
+HTML module:
+
+```html
+<script type="module">
+    import { GamepadListener } from './gamepad.js';
+</script>
 ```
 
 ES modules:

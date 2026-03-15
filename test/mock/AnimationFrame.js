@@ -1,4 +1,4 @@
-module.exports = class AnimationFrame {
+export default class AnimationFrame {
     constructor() {
         this.nextFrame = [];
 

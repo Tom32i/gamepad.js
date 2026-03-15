@@ -1,4 +1,4 @@
-module.exports = class Gamepad {
+export default class Gamepad {
     constructor(axes = 4, buttons = 10, id = 'Mocked Gamepad') {
         this.axes = new Array(axes).fill(0.0);
         this.buttons = new Array(buttons).fill(null).map(() => new GamepadButton());

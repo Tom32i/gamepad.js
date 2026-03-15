@@ -14,6 +14,7 @@ export default class GamepadHandler extends EventEmitter
             analog: true,
             deadZone: 0,
             precision: 0,
+
         })
         .setTypes({
             analog: 'boolean',
