@@ -5,7 +5,7 @@
 install:
 	npm install
 
-# Launch server
+# Launch dev server
 start:
 	npm run start
 

@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import { connect, disconnect, nextFrame, reset, Gamepad } from './mock';
-import { GamepadListener, GamepadHandler } from '@gamepad';
+import { GamepadListener, GamepadHandler, XboxMapping } from 'gamepad.js';
 
 describe('GamepadListener', () => {
     describe('Multiple gamepads', () => {
@@ -63,7 +63,8 @@ describe('GamepadListener', () => {
                 type: "gamepad:connected",
                 detail: {
                     index: 0,
-                    gamepad: gamepadA
+                    gamepad: gamepadA,
+                    mapping: null,
                 }
             });
 
@@ -78,27 +79,17 @@ describe('GamepadListener', () => {
 
             nextFrame();
 
-            expect(onButton).toHaveBeenCalledWith({
-                type: "gamepad:button",
-                detail: {
-                    index: 0,
-                    button: 4,
-                    value: 1,
-                    pressed: true,
-                    gamepad: gamepadA
-                }
-            });
+            const detail = {
+                index: 0,
+                button: 4,
+                label: "Button 4",
+                value: 1,
+                pressed: true,
+                gamepad: gamepadA,
+            };
 
-            expect(onButtonFour).toHaveBeenCalledWith({
-                type: "gamepad:0:button:4",
-                detail: {
-                    index: 0,
-                    button: 4,
-                    value: 1,
-                    pressed: true,
-                    gamepad: gamepadA
-                }
-            });
+            expect(onButton).toHaveBeenCalledWith({ type: "gamepad:button", detail });
+            expect(onButtonFour).toHaveBeenCalledWith({ type: "gamepad:0:button:4", detail });
 
             expect(onConnected).not.toHaveBeenCalled();
             expect(onDisconnected).not.toHaveBeenCalled();
@@ -110,27 +101,17 @@ describe('GamepadListener', () => {
 
             nextFrame();
 
-            expect(onButton).toHaveBeenCalledWith({
-                type: "gamepad:button",
-                detail: {
-                    index: 0,
-                    button: 4,
-                    value: 0,
-                    pressed: false,
-                    gamepad: gamepadA
-                }
-            });
+            const detail = {
+                index: 0,
+                button: 4,
+                label: "Button 4",
+                value: 0,
+                pressed: false,
+                gamepad: gamepadA,
+            };
 
-            expect(onButtonFour).toHaveBeenCalledWith({
-                type: "gamepad:0:button:4",
-                detail: {
-                    index: 0,
-                    button: 4,
-                    value: 0,
-                    pressed: false,
-                    gamepad: gamepadA
-                }
-            });
+            expect(onButton).toHaveBeenCalledWith({ type: "gamepad:button", detail });
+            expect(onButtonFour).toHaveBeenCalledWith({ type: "gamepad:0:button:4", detail });
 
             expect(onConnected).not.toHaveBeenCalled();
             expect(onDisconnected).not.toHaveBeenCalled();
@@ -147,6 +128,7 @@ describe('GamepadListener', () => {
                 detail: {
                     index: 0,
                     axis: 1,
+                    label: "Axis 1",
                     value: -0.1,
                     gamepad: gamepadA
                 }
@@ -168,6 +150,7 @@ describe('GamepadListener', () => {
                 detail: {
                     index: 0,
                     axis: 3,
+                    label: "Axis 3",
                     value: 0.9,
                     gamepad: gamepadA
                 }
@@ -188,7 +171,8 @@ describe('GamepadListener', () => {
                 type: "gamepad:connected",
                 detail: {
                     index: 1,
-                    gamepad: gamepadB
+                    gamepad: gamepadB,
+                    mapping: null,
                 }
             });
 
@@ -219,7 +203,7 @@ describe('GamepadListener', () => {
 
     describe('GamepadListener options', () => {
         // Mocking native browser feature
-        const gamepad = new Gamepad(1, 1, 'Gamepad solo');
+        const gamepad = new Gamepad(1, 1, 'Xbox 360 Controller');
 
         // Spies
         const onConnected = vi.fn();
@@ -232,7 +216,7 @@ describe('GamepadListener', () => {
             precision: 2,
             deadZone: 0.1,
             analog: true,
-        });
+        }, [XboxMapping]);
 
         beforeEach(() => {
             vi.clearAllMocks();
@@ -264,7 +248,8 @@ describe('GamepadListener', () => {
                 type: "gamepad:connected",
                 detail: {
                     index: 0,
-                    gamepad: gamepad
+                    gamepad: gamepad,
+                    mapping: 'Xbox',
                 }
             });
         });
@@ -279,6 +264,7 @@ describe('GamepadListener', () => {
                 detail: {
                     index: 0,
                     button: 0,
+                    label: "A",
                     value: 1,
                     pressed: true,
                     gamepad: gamepad
@@ -304,6 +290,7 @@ describe('GamepadListener', () => {
                 detail: {
                     index: 0,
                     axis: 0,
+                    label: "Left X",
                     value: -0.35,
                     gamepad: gamepad
                 }

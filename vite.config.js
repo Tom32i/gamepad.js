@@ -12,11 +12,6 @@ export default defineConfig({
       fileName: 'gamepad',
     },
   },
-  resolve: {
-    alias: {
-      '@gamepad': resolve(__dirname, './src'),
-    },
-  },
   preview: {
     host: true,
     port: 8080,

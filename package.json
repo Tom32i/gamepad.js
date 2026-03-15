@@ -17,9 +17,9 @@
     "start": "vite preview",
     "watch": "vite build --watch",
     "build": "vite build --mode=production",
+    "lint": "eslint src/* --ext .js,.json --fix",
     "test": "vitest --run",
-    "test-watch": "vitest --watch",
-    "lint": "eslint src/* --ext .js,.json --fix"
+    "test-watch": "vitest --watch"
   },
   "files": [
     "src",
@@ -30,19 +30,22 @@
   "module": "./dist/gamepad.js",
   "exports": {
     ".": {
-      "import": "./dist/netcode.js",
-      "require": "./dist/netcode.umd.cjs"
+      "import": "./dist/gamepad.js",
+      "require": "./dist/gamepad.umd.cjs"
     },
     "./GamepadHandler.js": {
       "import": "./src/GamepadHandler.js"
     },
     "./GamepadListener.js": {
       "import": "./src/GamepadListener.js"
+    },
+    "./tools": {
+      "import": "./src/tools"
     }
   },
   "dependencies": {
     "option-resolver.js": "^1.1.0",
-    "tom32i-event-emitter.js": "^2.0.5"
+    "tom32i-event-emitter.js": "^2.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",
