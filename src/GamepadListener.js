@@ -1,6 +1,6 @@
 import EventEmitter from 'tom32i-event-emitter.js/EventEmitter.js';
-import GamepadHandler from './GamepadHandler';
-import Loop from './Loop';
+import GamepadHandler from './GamepadHandler.js';
+import Loop from './Loop.js';
 
 /**
  * Gamepad Listener

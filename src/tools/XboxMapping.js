@@ -1,4 +1,4 @@
-import Mapping from './Mapping';
+import Mapping from './Mapping.js';
 
 export default class XboxMapping extends Mapping {
     static name = 'Xbox';

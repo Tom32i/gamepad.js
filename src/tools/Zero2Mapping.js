@@ -1,4 +1,4 @@
-import Mapping from './Mapping';
+import Mapping from './Mapping.js';
 
 export default class Zero2Mapping extends Mapping {
     static name = '8BitDo Zero 2';

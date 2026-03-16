@@ -1,6 +1,6 @@
 {
   "name": "gamepad.js",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A simple HTML5 Gamepad handler that provides keyboard-like events for Gamepad axes and button",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
